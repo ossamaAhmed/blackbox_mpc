@@ -1,2 +1,0 @@
-from tf_neuralmpc.trajectory_evaluators.deterministic import DeterministicTrajectoryEvaluator
-from tf_neuralmpc.trajectory_evaluators.evaluator_base import EvaluatorBase

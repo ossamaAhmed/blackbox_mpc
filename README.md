@@ -63,11 +63,11 @@ Note: Make sure to upgrade pip before installing thr requirements ``python -m pi
 
 The easiest way to get familiar with the framework is to run through the tutorials provided. An example is shown below:
 ```python
-from tf_neuralmpc.environment_utils import EnvironmentWrapper
-from tf_neuralmpc.examples.true_models import PendulumTrueModel
-from tf_neuralmpc.examples.cost_funcs import pendulum_state_reward_function, pendulum_actions_reward_function
+from blackbox_mpc.environment_utils import EnvironmentWrapper
+from blackbox_mpc.examples.true_models import PendulumTrueModel
+from blackbox_mpc.examples.cost_funcs import pendulum_state_reward_function, pendulum_actions_reward_function
 import numpy as np
-from tf_neuralmpc import Runner
+from blackbox_mpc import Runner
 
 number_of_agents = 5
 single_env, parallel_env = EnvironmentWrapper.make_standard_gym_env("Pendulum-v0", random_seed=0,
