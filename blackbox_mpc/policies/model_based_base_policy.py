@@ -1,20 +1,21 @@
 class ModelBasedBasePolicy(object):
-    """This is the model based policy base class for controlling the agent"""
     def __init__(self, trajectory_evaluator):
         """
-            This is the initializer function for the model free policy base class.
+            This is the model based policy base class for controlling the agent
 
         Parameters
         ---------
-        trajectory_evaluator: SystemDynamics
-            Defines the system dynamics to be used in the policy.
+        trajectory_evaluator: EvaluatorBase
+            Defines the trajectory evaluator to be used in the optimizer to
+            evaluate trajectories.
         """
         self._trajectory_evaluator = trajectory_evaluator
         return
 
     def act(self,  observations, t, exploration_noise=False):
         """
-        This is the act function for the model based policy base class, which should be called to provide the action
+        This is the act function for the model based policy base class,
+        which should be called to provide the action
         to be executed at the current time step.
 
 
@@ -26,8 +27,6 @@ class ModelBasedBasePolicy(object):
             Defines the current timestep.
         exploration_noise: bool
             Defines if exploration noise should be added to the action to be executed.
-        log_results: bool
-            Defines if results should be logged to tensorboard or not.
 
 
         Returns
@@ -43,7 +42,7 @@ class ModelBasedBasePolicy(object):
 
     def reset(self):
         """
-        This is the reset function for the model based policy base class, which should be called at the beginning of
-        the episode.
+        This is the reset function for the model based policy base class,
+        which should be called at the beginning of the episode.
         """
         raise Exception("reset function is not implemented yet")

@@ -7,8 +7,9 @@ class EnvironmentWrapper:
     @staticmethod
     def make_standard_gym_env(env_name, random_seed=0, num_of_agents=1):
         """
-        This is the make env function for standard gym envs which is responsible for creating the parallel environment,
-        and a single enviornment as well. This takes care of traditional gym and mujoco envs.
+        This is the make env function for standard gym envs which is responsible
+        for creating the parallel environment. This takes care of traditional gym
+        and mujoco envs.
 
         Parameters
         ---------
@@ -21,8 +22,6 @@ class EnvironmentWrapper:
 
         Returns
         -------
-        recording_env: mujoco_env.MujocoEnv
-            A single environment for one agent only.
         env: SubprocVecEnv
             A parellel environment for n agents running in parellel.
         """
@@ -43,12 +42,13 @@ class EnvironmentWrapper:
     @staticmethod
     def make_custom_gym_env(env_class, random_seed=0, num_of_agents=1):
         """
-           This is the make env function for custom gym envs which is responsible for creating the parallel environment,
-           and a single enviornment as well. This takes care of custom gym and mujoco envs.
+           This is the make env function for custom gym envs which is responsible
+           for creating the parallel environment.
+           This takes care of custom gym and mujoco envs.
 
            Parameters
            ---------
-           env_class: mujoco_env.MujocoEnv
+           env_class: gymEnv
                This specifies the class to be used in instantiating the envs.
            random_seed: Int
                This specifies the seed to use.
@@ -57,8 +57,6 @@ class EnvironmentWrapper:
 
            Returns
            -------
-           recording_env: mujoco_env.MujocoEnv
-                A single environment for one agent only.
            env: SubprocVecEnv
                 A parellel environment for n agents running in parellel.
            """

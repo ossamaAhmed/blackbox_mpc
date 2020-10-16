@@ -1,7 +1,7 @@
 Environment Utils
 =====================
 
-.. automodule:: tf_neuralmpc.environment_utils
+.. automodule:: blackbox_mpc.environment_utils
 
 Env Wrapper
 -----------

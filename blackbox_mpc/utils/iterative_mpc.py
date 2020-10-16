@@ -31,6 +31,7 @@ def learn_dynamics_iteratively_w_mpc(env,
                                      exploration_noise=False,
                                      epochs=30, learning_rate=1e-3,
                                      validation_split=0.2, batch_size=128,
+                                     start_episode=0,
                                      **optimizer_args):
     """
     This is the learn dynamics function iteratively using mpc policy
@@ -147,5 +148,6 @@ def learn_dynamics_iteratively_w_mpc(env,
             is_normalized=is_normalized,
             nn_optimizer=nn_optimizer,
             tf_writer=tf_writer,
-            exploration_noise=exploration_noise)
+            exploration_noise=exploration_noise,
+            start_episode=start_episode + (number_of_rollouts_for_refinement*i))
     return dynamics_handler, mpc_policy

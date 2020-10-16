@@ -1,7 +1,7 @@
 Trajectory Evaluators
 =====================
 
-.. automodule:: tf_neuralmpc.trajectory_evaluators
+.. automodule:: blackbox_mpc.trajectory_evaluators
 
 Evaluator Base Class
 --------------------

@@ -1,14 +1,7 @@
 Dynamics Functions
 ==================
 
-.. automodule:: tf_neuralmpc.dynamics_functions
-
-Deterministic Dynamics Base Function
-------------------------------------
-.. autoclass:: DeterministicDynamicsFunctionBase
-    :members:
-    :special-members:
-
+.. automodule:: blackbox_mpc.dynamics_functions
 
 Deterministic Dynamics MLP Function
 -----------------------------------

@@ -1,7 +1,7 @@
 Optimizers
 ==========
 
-.. automodule:: tf_neuralmpc.optimizers
+.. automodule:: blackbox_mpc.optimizers
 
 Optimizer Base
 --------------

@@ -4,18 +4,21 @@ from blackbox_mpc.optimizers.optimizer_base import OptimizerBase
 
 
 class CEMOptimizer(OptimizerBase):
-    """This Class defines a Cross-Entropy Method optimizer.
-       (http://web.mit.edu/6.454/www/www_fall_2003/gew/CEtutorial.pdf)"""
     def __init__(self, env_action_space, env_observation_space,
                  planning_horizon=50, max_iterations=5, population_size=500,
                  num_elite=50, num_agents=5,
                  epsilon=0.001, alpha=0.25):
         """
-        This is the initializer function for the Cross-Entropy Method Optimizer.
+        This Class defines a Cross-Entropy Method optimizer.
+        (http://web.mit.edu/6.454/www/www_fall_2003/gew/CEtutorial.pdf)
 
 
         Parameters
         ---------
+        env_action_space: gym.ActionSpace
+            Defines the action space of the gym environment.
+        env_observation_space: gym.ObservationSpace
+            Defines the observation space of the gym environment.
         planning_horizon: Int
             Defines the planning horizon for the optimizer (how many steps to lookahead and optimize for).
         max_iterations: tf.int32
@@ -24,16 +27,6 @@ class CEMOptimizer(OptimizerBase):
             Defines the population size of the particles evaluated at each iteration.
         num_elite: tf.int32
             Defines the number of elites kept for the next iteration from the population.
-        dim_U: tf.int32
-            Defines the dimensions of the input/ action space.
-        dim_O: tf.int32
-            Defines the dimensions of the observations space.
-        action_upper_bound: tf.float32
-            Defines the actions upper bound that could be applied, shape should be 1xdim_U.
-        action_lower_bound: tf.float32
-            Defines the actions lower bound that could be applied, shape should be 1xdim_U.
-        trajectory_evaluator: EvaluatorBaseClass
-            Defines the trajectory evaluator to be used to evaluate the reward of a sequence of actions.
         num_agents: tf.int32
             Defines the number of runner running in parallel
         epsilon: tf.float32
@@ -80,29 +73,6 @@ class CEMOptimizer(OptimizerBase):
 
     @tf.function
     def _optimize(self, current_state, time_step):
-        """
-       This is the call function for the Cross-Entropy Method Optimizer.
-       It is used to calculate the optimal solution for action at the current timestep given the current state.
-
-       Parameters
-       ---------
-       current_state: tf.float32
-           Defines the current state of the system, (dims=num_of_agents X dim_S)
-       time_step: tf.float32
-           Defines the current timestep of the episode.
-       exploration_noise: tf.bool
-           Define if the optimal action should have some noise added to it before returning it.
-
-
-       Returns
-        -------
-        resulting_action: tf.float32
-            The optimal solution for the first action to be applied in the current time step.
-        next_state: tf.float32
-            The next state predicted using the dynamics model in the trajectory evaluator.
-        rewards_of_next_state: tf.float32
-            The predicted reward achieved after applying the action given by the optimizer.
-       """
         def continue_condition(t, mean, variance):
             result = tf.less(t, self._max_iterations)
             return result

@@ -28,7 +28,7 @@ class EvaluatorBase(tf.Module):
 
           Parameters
           ---------
-          current_state: tf.float32
+          current_states: tf.float32
               Defines the current state of the system, (dims=num_of_agents X dim_S)
           action_sequences: tf.float32
              Defines the action sequences to be evaluated, (dims = population X num_of_agents X planning_horizon X dim_U)

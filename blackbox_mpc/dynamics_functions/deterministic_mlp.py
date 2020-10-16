@@ -2,18 +2,18 @@ import tensorflow as tf
 
 
 class DeterministicMLP(tf.Module):
-    """This is the deterministic fully connected MLP dynamics function class for (s_t, a_t) - > (s_t+1)"""
     def __init__(self, layers, activation_functions,
                  loss_fn=tf.keras.losses.MeanSquaredError(),
                  name=None):
         """
-        This is the initializer function for the deterministic fully connected MLP dynamics function class.
-
+        A deterministic fully connected MLP dynamics function class for
+        (s_t, a_t) - > (s_t+1)
 
         Parameters
         ---------
-        name: String
-            Defines the name of the block of the deterministic MLP dynamics function.
+        name: str
+            Defines the name of the block of the deterministic MLP dynamics
+            function.
         """
         super(DeterministicMLP, self).__init__(name=name)
         self.layers = []
@@ -27,14 +27,15 @@ class DeterministicMLP(tf.Module):
     @tf.function
     def __call__(self, x, train):
         """
-        This is the call function for the deterministic fully connected MLP dynamics function class.
+        This is the call function for the deterministic fully connected MLP
+        dynamics function class.
 
 
         Parameters
         ---------
         x: tf.float32
-            Defines the (s_t, a_t) which is the state and action stacked on top of each other,
-            (dims = Batch X (dim_S + dim_U))
+            Defines the (s_t, a_t) which is the state and action stacked on top
+            of each other, (dims = Batch X (dim_S + dim_U))
 
         train: tf.bool
             Defines whether the network should run in train mode or not.
@@ -52,7 +53,8 @@ class DeterministicMLP(tf.Module):
     @tf.function
     def get_loss(self, expected_output, predictions):
         """
-        This is the training loss function for the deterministic fully connected MLP dynamics function class.
+        This is the training loss function for the deterministic fully
+        connected MLP dynamics function class.
 
 
         Parameters
@@ -73,7 +75,8 @@ class DeterministicMLP(tf.Module):
     @tf.function
     def get_validation_loss(self, expected_output, predictions):
         """
-        This is the validation loss function for the deterministic fully connected MLP dynamics function class.
+        This is the validation loss function for the deterministic fully
+        connected MLP dynamics function class.
 
 
         Parameters

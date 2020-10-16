@@ -8,7 +8,6 @@ import numpy as np
 
 
 class MPCPolicy(ModelBasedBasePolicy):
-    """This is the model predictive control policy for controlling the agent"""
     def __init__(self, trajectory_evaluator=None,
                  optimizer=None, tf_writer=None,
                  log_dir=None, reward_function=None,
@@ -20,17 +19,41 @@ class MPCPolicy(ModelBasedBasePolicy):
                  saved_model_dir=None,
                  **optimizer_args):
         """
-            This is the initializer function for the model predictive control policy.
+            This is the model predictive control policy for controlling the agent
 
         Parameters
         ---------
-        system_dynamics_handler: SystemDynamicsHandler
-            Defines the system dynamics handler to be used in the policy for preprocessing the observations and
-            postprocessing the state to observations.
-        optimizer: OptimizerBaseClass
-            Optimizer to be used that optimizes for the best action sequence and returns the first action.
+        trajectory_evaluator: EvaluatorBase
+            Defines the trajectory evaluator to be used in the optimizer to
+            evaluate trajectories.
         tf_writer: tf.summary
             Tensorflow writer to be used in logging the data.
+        optimizer_name: str
+            optimizer name between in ['CEM', 'CMA-ES', 'PI2', 'RandomSearch', 'PSO', 'SPSA'].
+        env_action_space: gym.ActionSpace
+            Defines the action space of the gym environment.
+        env_observation_space: gym.ObservationSpace
+            Defines the observation space of the gym environment.
+        dynamics_function: DeterministicDynamicsFunctionBaseClass
+            Defines the system dynamics function.
+        dynamics_handler: SystemDynamicsHandler
+            The system_dynamics_handler is a handler of the state, actions and targets processing funcs as well
+            as the dynamics function.
+        reward_function: tf_function
+            Defines the reward function with the prototype: tf_func_name(current_state, next_state, current_actions),
+            where current_state is BatchXdim_S, next_state is BatchXdim_S and  current_actions is BatchXdim_U.
+        true_model: bool
+            boolean defining if its a true model dynamics or not.
+        log_dir: string
+            Defines the log directory to save the normalization statistics in.
+        num_agents: tf.int32
+            Defines the number of runner running in parallel
+        saved_model_dir: string
+            Defines the saved model directory where the model is saved in, in case of loading the model.
+        save_model_frequency: Int
+            Defines how often the model should be saved (defined relative to the number of refining iters)
+        optimizer_args: args
+            other arguments specific to the optimizer.
         """
         if trajectory_evaluator is None:
             if dynamics_handler is None:
@@ -53,16 +76,47 @@ class MPCPolicy(ModelBasedBasePolicy):
         super(MPCPolicy, self).__init__(trajectory_evaluator=
                                         trajectory_evaluator)
         if optimizer is None:
+            if num_agents is None:
+                raise Exception("Please Specify Num Of Agents in the MPC")
             if optimizer_name == 'CEM':
                 from blackbox_mpc.optimizers.cem import CEMOptimizer
-                if num_agents is None:
-                    raise Exception("Please Specify Num Of Agents in the MPC")
                 optimizer = CEMOptimizer(env_action_space=env_action_space,
                                          env_observation_space=env_observation_space,
                                          num_agents=num_agents,
                                          **optimizer_args)
+            elif optimizer_name == 'CMA-ES':
+                from blackbox_mpc.optimizers.cma_es import CMAESOptimizer
+                optimizer = CMAESOptimizer(env_action_space=env_action_space,
+                                           env_observation_space=env_observation_space,
+                                           num_agents=num_agents,
+                                           **optimizer_args)
+            elif optimizer_name == 'PI2':
+                from blackbox_mpc.optimizers.pi2 import PI2Optimizer
+                optimizer = PI2Optimizer(env_action_space=env_action_space,
+                                         env_observation_space=env_observation_space,
+                                         num_agents=num_agents,
+                                         **optimizer_args)
+            elif optimizer_name == 'PSO':
+                from blackbox_mpc.optimizers.pso import PSOOptimizer
+                optimizer = PSOOptimizer(env_action_space=env_action_space,
+                                         env_observation_space=env_observation_space,
+                                         num_agents=num_agents,
+                                         **optimizer_args)
+            elif optimizer_name == 'SPSA':
+                from blackbox_mpc.optimizers.spsa import SPSAOptimizer
+                optimizer = SPSAOptimizer(env_action_space=env_action_space,
+                                          env_observation_space=env_observation_space,
+                                          num_agents=num_agents,
+                                          **optimizer_args)
+            elif optimizer_name == 'RandomSearch':
+                from blackbox_mpc.optimizers.random_search import RandomSearchOptimizer
+                optimizer = RandomSearchOptimizer(env_action_space=env_action_space,
+                                                  env_observation_space=env_observation_space,
+                                                  num_agents=num_agents,
+                                                  **optimizer_args)
         self._optimizer = optimizer
         self._tf_writer = tf_writer
+        self._trajectory_evaluator = trajectory_evaluator
         self._optimizer.set_trajectory_evaluator(trajectory_evaluator)
         self._act_call_counter = 0
         return
@@ -81,8 +135,6 @@ class MPCPolicy(ModelBasedBasePolicy):
             Defines the current timestep.
         exploration_noise: bool
             Defines if exploration noise should be added to the action to be executed.
-        log_results: bool
-            Defines if results should be logged to tensorboard or not.
 
 
         Returns
@@ -126,7 +178,8 @@ class MPCPolicy(ModelBasedBasePolicy):
         """
         self._optimizer.reset()
 
-    def switch_optimizer(self, optimizer=None, optimizer_name=''):
+    def switch_optimizer(self, optimizer=None, optimizer_name='',
+                         **optimizer_args):
         """
         This function is used to switch the optimizer of model predictive control policy.
 
@@ -136,128 +189,57 @@ class MPCPolicy(ModelBasedBasePolicy):
             Optimizer to be used that optimizes for the best action sequence and returns the first action.
         optimizer_name: str
             optimizer name between in ['CEM', 'CMA-ES', 'PI2', 'RandomSearch', 'PSO', 'SPSA'].
+        optimizer_args: args
+            other arguments specific to the optimizer.
         """
         if optimizer is None:
-            dim_U = self._optimizer.dim_U
-            dim_O = self._optimizer.dim_O
-            dim_S = self._optimizer.dim_S
-            action_upper_bound = self._optimizer.action_upper_bound
-            action_lower_bound = self._optimizer.action_lower_bound
-            num_agents = self._optimizer.num_agents
-            deterministic_trajectory_evaluator = self._optimizer.trajectory_evaluator
-            planning_horizon = self._optimizer.planning_horizon
-            if optimizer_name == 'RandomSearch':
-                # 6- define the corresponding optimizer
-                from blackbox_mpc.optimizers.random_search import RandomSearchOptimizer
-                population_size = tf.constant(1024, dtype=tf.int32)
-                self._optimizer = RandomSearchOptimizer(planning_horizon=planning_horizon,
-                                                        population_size=population_size,
-                                                        dim_U=dim_U,
-                                                        dim_O=dim_O,
-                                                        action_upper_bound=action_upper_bound,
-                                                        action_lower_bound=action_lower_bound,
-                                                        trajectory_evaluator=deterministic_trajectory_evaluator,
-                                                        num_agents=num_agents)
-            elif optimizer_name == 'CEM':
+            if optimizer_name == 'CEM':
                 from blackbox_mpc.optimizers.cem import CEMOptimizer
-                max_iterations = 5
-                population_size = 500
-                num_elites = 50
-                alpha = 0.1
-                epsilon = 0.001
-                self._optimizer = CEMOptimizer(planning_horizon=planning_horizon,
-                                               max_iterations=tf.constant(max_iterations, dtype=tf.int32),
-                                               population_size=tf.constant(population_size, dtype=tf.int32),
-                                               num_elite=tf.constant(num_elites, dtype=tf.int32),
-                                               dim_U=dim_U,
-                                               dim_O=dim_O,
-                                               action_upper_bound=action_upper_bound,
-                                               action_lower_bound=action_lower_bound,
-                                               epsilon=tf.constant(epsilon, dtype=tf.float32),
-                                               alpha=tf.constant(alpha, dtype=tf.float32),
-                                               num_agents=num_agents,
-                                               trajectory_evaluator=deterministic_trajectory_evaluator)
+                optimizer = CEMOptimizer(env_action_space=self._optimizer._env_action_space,
+                                         env_observation_space=self._optimizer._env_observation_space,
+                                         num_agents=self._optimizer._num_agents,
+                                         **optimizer_args)
+                self._optimizer = optimizer
             elif optimizer_name == 'CMA-ES':
                 from blackbox_mpc.optimizers.cma_es import CMAESOptimizer
-                max_iterations = 5
-                population_size = 500
-                num_elites = 50
-                alpha_cov = 2.0
-                sigma = 1
-                self._optimizer = CMAESOptimizer(planning_horizon=planning_horizon,
-                                                 max_iterations=tf.constant(max_iterations, dtype=tf.int32),
-                                                 population_size=tf.constant(population_size,
-                                                                            dtype=tf.int32),
-                                                 num_elite=tf.constant(num_elites, dtype=tf.int32),
-                                                 h_sigma=tf.constant(sigma, dtype=tf.float32),
-                                                 alpha_cov=tf.constant(alpha_cov, dtype=tf.float32),
-                                                 dim_U=dim_U,
-                                                 dim_O=dim_O,
-                                                 action_upper_bound=action_upper_bound,
-                                                 action_lower_bound=action_lower_bound,
-                                                 num_agents=num_agents,
-                                                 trajectory_evaluator=deterministic_trajectory_evaluator)
+                optimizer = CMAESOptimizer(
+                    env_action_space=self._optimizer._env_action_space,
+                    env_observation_space=self._optimizer._env_observation_space,
+                    num_agents=self._optimizer._num_agents,
+                    **optimizer_args)
+                self._optimizer = optimizer
             elif optimizer_name == 'PI2':
                 from blackbox_mpc.optimizers.pi2 import PI2Optimizer
-                max_iterations = 5
-                population_size = 500
-                lamda = 1.0
-                self._optimizer = PI2Optimizer(planning_horizon=planning_horizon,
-                                               max_iterations=tf.constant(max_iterations, dtype=tf.int32),
-                                               population_size=tf.constant(population_size,
-                                                                          dtype=tf.int32),
-                                               lamda=tf.constant(lamda, dtype=tf.float32),
-                                               dim_U=dim_U,
-                                               dim_O=dim_O,
-                                               action_upper_bound=action_upper_bound,
-                                               action_lower_bound=action_lower_bound,
-                                               num_agents=num_agents,
-                                               trajectory_evaluator=deterministic_trajectory_evaluator)
+                optimizer = PI2Optimizer(env_action_space=self._optimizer._env_action_space,
+                                         env_observation_space=self._optimizer._env_observation_space,
+                                         num_agents=self._optimizer._num_agents,
+                                         **optimizer_args)
+                self._optimizer = optimizer
             elif optimizer_name == 'PSO':
                 from blackbox_mpc.optimizers.pso import PSOOptimizer
-                max_iterations = 5
-                population_size = 500
-                c1 = 0.3
-                c2 = 0.5
-                w = 0.2
-                initial_velocity_fraction = 0.01
-                self._optimizer = PSOOptimizer(planning_horizon=planning_horizon,
-                                               max_iterations=tf.constant(max_iterations, dtype=tf.int32),
-                                               population_size=tf.constant(population_size, dtype=tf.int32),
-                                               c1=tf.constant(c1, dtype=tf.float32),
-                                               c2=tf.constant(c2, dtype=tf.float32),
-                                               w=tf.constant(w, dtype=tf.float32),
-                                               initial_velocity_fraction=tf.constant(
-                                                  initial_velocity_fraction, dtype=tf.float32),
-                                               dim_U=dim_U,
-                                               dim_O=dim_O,
-                                               action_upper_bound=action_upper_bound,
-                                               action_lower_bound=action_lower_bound,
-                                               num_agents=num_agents,
-                                               trajectory_evaluator=deterministic_trajectory_evaluator)
+                optimizer = PSOOptimizer(env_action_space=self._optimizer._env_action_space,
+                                         env_observation_space=self._optimizer._env_observation_space,
+                                         num_agents=self._optimizer._num_agents,
+                                         **optimizer_args)
+                self._optimizer = optimizer
             elif optimizer_name == 'SPSA':
                 from blackbox_mpc.optimizers.spsa import SPSAOptimizer
-                max_iterations = 5
-                population_size = 500
-                alpha = 0.602
-                gamma = 0.101
-                a_par = 0.01
-                noise_parameter = 0.3
-                self._optimizer = SPSAOptimizer(planning_horizon=planning_horizon,
-                                                max_iterations=tf.constant(max_iterations, dtype=tf.int32),
-                                                population_size=tf.constant(population_size,
-                                                                           dtype=tf.int32),
-                                                alpha=tf.constant(alpha, dtype=tf.float32),
-                                                gamma=tf.constant(gamma, dtype=tf.float32),
-                                                a_par=tf.constant(a_par, dtype=tf.float32),
-                                                noise_parameter=tf.constant(noise_parameter,
-                                                                           dtype=tf.float32),
-                                                dim_U=dim_U,
-                                                dim_O=dim_O,
-                                                action_upper_bound=action_upper_bound,
-                                                action_lower_bound=action_lower_bound,
-                                                num_agents=num_agents,
-                                                trajectory_evaluator=deterministic_trajectory_evaluator)
+                optimizer = SPSAOptimizer(
+                    env_action_space=self._optimizer._env_action_space,
+                    env_observation_space=self._optimizer._env_observation_space,
+                    num_agents=self._optimizer._num_agents,
+                    **optimizer_args)
+                self._optimizer = optimizer
+            elif optimizer_name == 'RandomSearch':
+                from blackbox_mpc.optimizers.random_search import \
+                    RandomSearchOptimizer
+                optimizer = RandomSearchOptimizer(
+                    env_action_space=self._optimizer._env_action_space,
+                    env_observation_space=self._optimizer._env_observation_space,
+                    num_agents=self._optimizer._num_agents,
+                    **optimizer_args)
+                self._optimizer = optimizer
         else:
             self._optimizer = optimizer
+        self._optimizer.set_trajectory_evaluator(self._trajectory_evaluator)
         return

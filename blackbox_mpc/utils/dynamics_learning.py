@@ -16,7 +16,8 @@ def learn_dynamics_from_policy(env, policy,
                                exploration_noise=False,
                                log_dir=None,
                                save_model_frequency=1,
-                               saved_model_dir=None):
+                               saved_model_dir=None,
+                               start_episode=0):
     """
     This is the learn dynamics function for the runner class which samples n rollouts using a random policy and then
     uses these rollouts to learn a dynamics function for the system.
@@ -60,7 +61,9 @@ def learn_dynamics_from_policy(env, policy,
                                                         saved_model_dir=saved_model_dir)
     traj_obs, traj_acs, traj_rews = \
         perform_rollouts(env, number_of_rollouts, task_horizon, policy,
-                         exploration_noise=exploration_noise, tf_writer=None)
+                         exploration_noise=exploration_noise,
+                         tf_writer=tf_writer,
+                         start_episode=start_episode)
     system_dynamics_handler.train(traj_obs, traj_acs, traj_rews,
                                   validation_split=validation_split,
                                   batch_size=batch_size,

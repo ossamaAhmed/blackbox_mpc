@@ -6,8 +6,6 @@ from blackbox_mpc.utils.transforms import default_transform_targets, \
 
 
 class SystemDynamicsHandler(object):
-    """This is the system dynamics handler class that is reponsible for training the dynamics functions
-    , storing the rollouts as well as prepocessing and postprocessing of the MDP elements"""
     def __init__(self, env_action_space, env_observation_space,
                  dynamics_function=None, true_model=False,
                  is_normalized=True,
@@ -18,41 +16,46 @@ class SystemDynamicsHandler(object):
                  inverse_transform_targets_func=
                  default_inverse_transform_targets):
         """
-        This is the initializer function for the system dynamics handler class.
+        This is the system dynamics handler class that is reponsible
+        for training the dynamics functions, storing the rollouts as well as
+         prepocessing and postprocessing of the MDP elements
 
 
         Parameters
         ----------
         dynamics_function: DeterministicDynamicsFunctionBaseClass
             Defines the system dynamics function.
-        dim_U: tf.int32
-            Defines the dimensions of the input/ action space.
-        dim_O: tf.int32
-            Defines the dimensions of the observations space.
+        env_action_space: gym.ActionSpace
+            Defines the action space of the gym environment.
+        env_observation_space: tf.int32
+            Defines the observation space of the gym environment.
         tf_writer: tf.summary
             Defines a tensorflow writer to be used for logging
         log_dir: string
             Defines the log directory to save the normalization statistics in.
         saved_model_dir: string
-            Defines the saved model directory where the model is saved in, in case of loading the model.
-        num_of_agents: Int
-            Defines the number of runner running in parallel
+            Defines the saved model directory where the model is saved in, in
+            case of loading the model.
         dynamics_function: DeterministicDynamicsFunctionBase
             Defines the dynamics_function of the nn dynamics function itself
         transform_targets_func: tf_function
-            Defines a tf function to transform the next states as targets (output of the nn dynamics), by default
-            this is the deviation function which is (target = next_state - current_state).
+            Defines a tf function to transform the next states as targets
+            (output of the nn dynamics), by default
+            this is the deviation function which is
+            (target = next_state - current_state).
         inverse_transform_targets_func: tf_function
-            Defines a tf function to inverse transform the targets (output of the nn dynamics), by default
-            this is the inverse of the deviation function which is (next_state = target + current_state).
+            Defines a tf function to inverse transform the targets
+            (output of the nn dynamics), by default
+            this is the inverse of the deviation function which is
+            (next_state = target + current_state).
         save_model_frequency: Int
-            Defines how often the model should be saved (defined relative to the number of refining iters)
-        load_saved_model: bool
-            Defines if a model should be loaded or not.
+            Defines how often the model should be saved (defined relative to
+            the number of refining iters)
         true_model: bool
             Defines if the dynamics function is a non trainable model or not.
-        normalization: bool
-            Defines if the dynamics function should be trained with normalization or not.
+        is_normalized: bool
+            Defines if the dynamics function should be trained with
+            normalization or not.
         """
         self._is_true_model = true_model
         self._dim_S = tf.constant(env_observation_space.shape[0], dtype=tf.int32)
@@ -94,7 +97,8 @@ class SystemDynamicsHandler(object):
     @tf.function
     def process_input(self, states, actions):
         """
-        This is the process_input function, which takes in the states and actions and preprocesses them for the dynamics
+        This is the process_input function, which takes in the states and
+        actions and preprocesses them for the dynamics
         function, (normalization..etc)
 
         Parameters
@@ -124,15 +128,17 @@ class SystemDynamicsHandler(object):
     @tf.function
     def process_output(self, inputs_states, raw_output):
         """
-        This is the process_state_output function, which takes in the previous states predicted target/delta and processes
+        This is the process_state_output function, which takes in the
+        previous states predicted target/delta and processes
         them to get the predicted absolute next state.
 
         Parameters
         ---------
-        old_states: tf.float32
+        inputs_states: tf.float32
             The previous states has a shape of (Batch Xdim_S)
-        normalized_states_deviation: tf.float32
-            The predicted normalized delta as received from the dynamics function has a shape of (Batch Xdim_U).
+        raw_output: tf.float32
+            The predicted normalized delta as received from the dynamics function
+            has a shape of (Batch Xdim_U).
 
         Returns
         -------
@@ -159,7 +165,8 @@ class SystemDynamicsHandler(object):
               batch_size=128, learning_rate=1e-3, epochs=30,
               nn_optimizer=tf.keras.optimizers.Adam):
         """
-        This is the train function, which takes in the data of the MDP to train the dynamics model on it.
+        This is the train function, which takes in the data of the MDP to
+        train the dynamics model on it.
 
         Parameters
         ---------
@@ -172,7 +179,8 @@ class SystemDynamicsHandler(object):
         learning_rate: float
             Learning rate to be used in training the dynamics function.
         epochs: Int
-            Number of epochs to be used in training the dynamics function everytime train is called.
+            Number of epochs to be used in training the dynamics function
+            everytime train is called.
         validation_split: float32
             Defines the validation split to be used of the rollouts collected.
         batch_size: int
@@ -209,19 +217,27 @@ class SystemDynamicsHandler(object):
                 tf.TensorSpec([None, self._dim_U + self._dim_S], tf.float32),
                 tf.TensorSpec([], tf.bool))
             tf.saved_model.save(self._dynamics_function, self._log_dir +
-                                '/saved_model/', signatures=call)
+                                '/saved_model_' +
+                                str(self._refining_model_iter) + '/',
+                                signatures=call)
             #save the means and std devs
-            np.save(self._log_dir + "/saved_model/mean_states",
+            np.save(self._log_dir + '/saved_model_' +
+                                str(self._refining_model_iter) + '/mean_states',
                     self._mean_states)
-            np.save(self._log_dir + "/saved_model/std_states",
+            np.save(self._log_dir + '/saved_model_' +
+                                str(self._refining_model_iter) + '/std_states',
                     self._std_states)
-            np.save(self._log_dir + "/saved_model/mean_actions",
+            np.save(self._log_dir + '/saved_model_' +
+                                str(self._refining_model_iter) + '/mean_actions',
                     self._mean_actions)
-            np.save(self._log_dir + "/saved_model/std_actions",
+            np.save(self._log_dir + '/saved_model_' +
+                                str(self._refining_model_iter) + '/std_actions',
                     self._std_actions)
-            np.save(self._log_dir + "/saved_model/mean_targets",
+            np.save(self._log_dir + '/saved_model_' +
+                                str(self._refining_model_iter) + '/mean_targets',
                     self._mean_targets)
-            np.save(self._log_dir + "/saved_model/std_targets",
+            np.save(self._log_dir + '/saved_model_' +
+                                str(self._refining_model_iter) + '/std_targets',
                     self._std_targets)
         logging.info("Ended the system training")
         return
@@ -236,9 +252,11 @@ class SystemDynamicsHandler(object):
         Parameters
         ---------
         train_dataset: tf.data.Dataset
-            training dataset that is composed of (input, expected_output) after processing.
+            training dataset that is composed of (input, expected_output)
+            after processing.
         validation_dataset: tf.data.Dataset
-            validation dataset that is composed of (input, expected_output) after processing.
+            validation dataset that is composed of (input, expected_output)
+            after processing.
         """
         optimizer = nn_optimizer(learning_rate=learning_rate)
         training_loss = np.zeros(epochs)
@@ -331,4 +349,9 @@ class SystemDynamicsHandler(object):
         return
 
     def get_dynamics_function(self):
+        """
+        returns the dynamics function used by the system handler.
+
+        :return:
+        """
         return self._dynamics_function

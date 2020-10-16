@@ -1,14 +1,14 @@
 class ModelFreeBasePolicy(object):
-    """This is the model free policy base class for controlling the agent"""
     def __init__(self):
         """
-            This is the initializer function for the model free policy base class.
+            This is the model free policy base class for controlling the agent
         """
         pass
 
     def act(self, observations, t, exploration_noise=False):
         """
-        This is the act function for the model free policy base class, which should be called to provide the action
+        This is the act function for the model free policy base class,
+        which should be called to provide the action
         to be executed at the current time step.
 
 
@@ -29,7 +29,8 @@ class ModelFreeBasePolicy(object):
 
     def reset(self):
         """
-        This is the reset function for the model free policy base class, which should be called at the beginning of
+        This is the reset function for the model free policy base class,
+        which should be called at the beginning of
         the episode.
         """
         raise Exception("reset function is not implemented yet")

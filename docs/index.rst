@@ -67,7 +67,7 @@ There is the option of logging the results in tensorboard and saving the dynamic
    :maxdepth: 3
    :caption: Contents:
 
-   modules/tf_neuralmpc.rst
+   modules/blackbox_mpc.rst
 
 Indices and tables
 ==================

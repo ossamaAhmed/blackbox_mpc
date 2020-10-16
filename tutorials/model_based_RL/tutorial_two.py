@@ -11,9 +11,11 @@ from blackbox_mpc.utils.pendulum import pendulum_reward_function
 import gym
 import tensorflow as tf
 
-log_path = './tutorial_2'
+log_dir = './'
+tf_writer = tf.summary.create_file_writer(log_dir)
 env = gym.make("Pendulum-v0")
-dynamics_function = DeterministicMLP(layers=[env.action_space.shape[0]+env.observation_space.shape[0],
+dynamics_function = DeterministicMLP(layers=[env.action_space.shape[0]+
+                                             env.observation_space.shape[0],
                                               32,
                                               32,
                                               32,
@@ -32,9 +34,11 @@ learn_dynamics_iteratively_w_mpc(env=EnvironmentWrapper.make_standard_gym_env(
                                  number_of_initial_rollouts=5,
                                  number_of_rollouts_for_refinement=2,
                                  number_of_refinement_steps=3,
-                                 task_horizon=50,
-                                 planning_horizon=10,
+                                 task_horizon=200,
+                                 planning_horizon=50,
                                  initial_policy=initial_policy,
                                  dynamics_function=dynamics_function,
                                  num_agents=10,
-                                 reward_function=pendulum_reward_function)
+                                 reward_function=pendulum_reward_function,
+                                 log_dir=log_dir,
+                                 tf_writer=tf_writer)

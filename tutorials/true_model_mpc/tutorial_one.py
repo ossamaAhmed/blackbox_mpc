@@ -16,7 +16,8 @@ mpc_policy = MPCPolicy(reward_function=pendulum_reward_function,
                        env_observation_space=env.observation_space,
                        true_model=True,
                        dynamics_function=PendulumTrueModel(),
-                       optimizer_name='CEM')
+                       optimizer_name='RandomSearch',
+                       num_agents=1)
 
 current_obs = env.reset()
 for t in range(200):

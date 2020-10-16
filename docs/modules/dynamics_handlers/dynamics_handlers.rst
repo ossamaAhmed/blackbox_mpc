@@ -1,7 +1,7 @@
 Dynamics Handlers
 =================
 
-.. automodule:: tf_neuralmpc.dynamics_handlers
+.. automodule:: blackbox_mpc.dynamics_handlers
 
 Dynamics Handlers
 -----------------

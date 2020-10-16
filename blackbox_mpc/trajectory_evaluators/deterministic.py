@@ -3,26 +3,16 @@ from blackbox_mpc.trajectory_evaluators.evaluator_base import EvaluatorBase
 
 
 class DeterministicTrajectoryEvaluator(EvaluatorBase):
-    """This is the trajectory evaluator class for a deterministic dynamics function"""
     def __init__(self, reward_function, system_dynamics_handler):
         """
-        This is the initializer function for the Deterministic Trajectory Evaluator Class.
+        This is the trajectory evaluator class for a deterministic dynamics function
 
 
         Parameters
         ---------
-        state_reward_function: tf_function
-            Defines the state reward function with the prototype: tf_func_name(current_state, next_state),
-            where current_state is BatchXdim_S and next_state is BatchXdim_S.
-        actions_reward_function: tf_function
-            Defines the action reward function with the prototype: tf_func_name(current_actions),
-            where current_actions is BatchXdim_U.
-        planning_horizon: tf.int32
-            Defines the planning horizon for the optimizer (how many steps to lookahead and optimize for).
-        dim_U: tf.int32
-            Defines the dimensions of the input/action space.
-        dim_O: tf.int32
-            Defines the dimensions of the observations space.
+        reward_function: tf_function
+            Defines the reward function with the prototype: tf_func_name(current_state, next_state, current_actions),
+            where current_state is BatchXdim_S, next_state is BatchXdim_S and  current_actions is BatchXdim_U.
         system_dynamics_handler: SystemDynamicsHandler
             Defines the system dynamics handler class with its own trainer and observations and actions
              preprocessing functions.
@@ -42,7 +32,7 @@ class DeterministicTrajectoryEvaluator(EvaluatorBase):
 
           Parameters
           ---------
-          current_state: tf.float32
+          current_states: tf.float32
               Defines the current state of the system, (dims=num_of_agents X dim_S)
           action_sequences: tf.float32
              Defines the action sequences to be evaluated, (dims = population X num_of_agents X planning_horizon X dim_U)
@@ -93,9 +83,9 @@ class DeterministicTrajectoryEvaluator(EvaluatorBase):
 
           Parameters
           ---------
-          current_state: tf.float32
+          current_states: tf.float32
               Defines the current state of the system, (dims=num_of_agents X dim_S)
-          current_action: tf.float32
+          current_actions: tf.float32
              Defines the current action to be applied, (dims = num_of_agents X dim_U)
 
 
@@ -119,11 +109,11 @@ class DeterministicTrajectoryEvaluator(EvaluatorBase):
 
           Parameters
           ---------
-          current_state: tf.float32
+          current_states: tf.float32
               Defines the current state of the system, (dims=num_of_agents X dim_S)
-          next_state: tf.float32
+          next_states: tf.float32
               Defines the next state of the system, (dims=num_of_agents X dim_S)
-          current_action: tf.float32
+          current_actions: tf.float32
              Defines the current action to be applied, (dims = num_of_agents X dim_U)
 
 

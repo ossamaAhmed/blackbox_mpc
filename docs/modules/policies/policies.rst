@@ -1,7 +1,7 @@
 Policies
 ========
 
-.. automodule:: tf_neuralmpc.policies
+.. automodule:: blackbox_mpc.policies
 
 Model Based Base Policy
 -----------------------

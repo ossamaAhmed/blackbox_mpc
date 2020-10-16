@@ -9,7 +9,7 @@ from blackbox_mpc.policies.random_policy import RandomPolicy
 
 def perform_rollouts(env, number_of_rollouts, task_horizon, policy,
                      exploration_noise=False, tf_writer=None,
-                     start_step=0):
+                     start_episode=0):
     """
     This is the perform_rollouts function for the runner class which samples n episodes with a specified length
     using the provided policy.
@@ -43,7 +43,7 @@ def perform_rollouts(env, number_of_rollouts, task_horizon, policy,
             sample(
                 env, task_horizon, policy, exploration_noise=exploration_noise,
                 tf_writer=tf_writer,
-                episode_step=start_step+i))
+                episode_step=start_episode+i))
         traj_obs.append(samples[-1]["observations"])
         traj_acs.append(samples[-1]["actions"])
         traj_rews.append(samples[-1]["rewards"])
@@ -73,6 +73,7 @@ def sample(env, horizon, policy, episode_step,
         returns the episode rollouts results for all the agents in the parallelized environment,
         it has the form of {observations, actions, rewards, reward_sum}
     """
+    policy.reset()
     first_obs = env.reset()
     times, observations, actions, rewards, reward_sum, done = \
         [], [first_obs], [], [], 0, False

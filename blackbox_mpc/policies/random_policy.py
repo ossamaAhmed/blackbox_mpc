@@ -3,20 +3,17 @@ import tensorflow as tf
 
 
 class RandomPolicy(ModelFreeBasePolicy):
-    """This is the random policy for controlling the agent"""
     def __init__(self, number_of_agents, env_action_space):
         """
-        This is the initializer function for the random policy.
+        This is the random policy for controlling the agent
 
 
         Parameters
         ---------
+        env_action_space: gym.ActionSpace
+            Defines the action space of the gym environment.
         number_of_agents: tf.int32
             Defines the number of runner running in parallel
-        action_upper_bound: tf.float32
-            Defines the actions upper bound that could be applied, shape should be 1xdim_U.
-        action_lower_bound: tf.float32
-            Defines the actions lower bound that could be applied, shape should be 1xdim_U.
         """
         super(RandomPolicy, self).__init__()
         self._num_of_agents = number_of_agents
@@ -38,6 +35,8 @@ class RandomPolicy(ModelFreeBasePolicy):
             Defines the current observations received from the environment.
         t: tf.float32
             Defines the current timestep.
+        exploration_noise: bool
+            Defines if exploration noise should be added to the action to be executed.
 
 
         Returns
