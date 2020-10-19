@@ -1,0 +1,479 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Useful Utilities &mdash; blackbox_mpc 0.3 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="Environment Utils" href="../environment_utils/environment_utils.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> blackbox_mpc
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/getting_started.html">Getting Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../blackbox_mpc.html">blackbox_mpc</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../optimizers/optimizers.html">Optimizers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../policies/policies.html">Policies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dynamics_functions/dynamics_functions.html">Dynamics Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dynamics_handlers/dynamics_handlers.html">Dynamics Handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../trajectory_evaluators/trajectory_evaluators.html">Trajectory Evaluators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../environment_utils/environment_utils.html">Environment Utils</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Useful Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-blackbox_mpc.utils.dynamics_learning">Learning Dynamics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-blackbox_mpc.utils.iterative_mpc">Model Based RL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-blackbox_mpc.utils.pendulum">Pendulum Reward Function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pendulum-true-model">Pendulum True Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-blackbox_mpc.utils.recording">Recording Videos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-blackbox_mpc.utils.rollouts">Rollout Collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-blackbox_mpc.utils.transforms">Target transforms</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">blackbox_mpc</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../blackbox_mpc.html">blackbox_mpc</a> &raquo;</li>
+        
+      <li>Useful Utilities</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/modules/utils/utils.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="useful-utilities">
+<h1>Useful Utilities<a class="headerlink" href="#useful-utilities" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-blackbox_mpc.utils.dynamics_learning">
+<span id="learning-dynamics"></span><h2>Learning Dynamics<a class="headerlink" href="#module-blackbox_mpc.utils.dynamics_learning" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="blackbox_mpc.utils.dynamics_learning.learn_dynamics_from_policy">
+<code class="sig-prename descclassname">blackbox_mpc.utils.dynamics_learning.</code><code class="sig-name descname">learn_dynamics_from_policy</code><span class="sig-paren">(</span><em class="sig-param">env</em>, <em class="sig-param">policy</em>, <em class="sig-param">number_of_rollouts</em>, <em class="sig-param">task_horizon</em>, <em class="sig-param">dynamics_function=None</em>, <em class="sig-param">system_dynamics_handler=None</em>, <em class="sig-param">epochs=30</em>, <em class="sig-param">learning_rate=0.001</em>, <em class="sig-param">validation_split=0.2</em>, <em class="sig-param">batch_size=128</em>, <em class="sig-param">is_normalized=True</em>, <em class="sig-param">nn_optimizer=&lt;class 'tensorflow.python.keras.optimizer_v2.adam.Adam'&gt;</em>, <em class="sig-param">tf_writer=None</em>, <em class="sig-param">exploration_noise=False</em>, <em class="sig-param">log_dir=None</em>, <em class="sig-param">save_model_frequency=1</em>, <em class="sig-param">saved_model_dir=None</em>, <em class="sig-param">start_episode=0</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/blackbox_mpc/utils/dynamics_learning.html#learn_dynamics_from_policy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#blackbox_mpc.utils.dynamics_learning.learn_dynamics_from_policy" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the learn dynamics function for the runner class which samples n rollouts using a random policy and then
+uses these rollouts to learn a dynamics function for the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env</strong> (<em>parallelgymEnv</em>) -- a wrapped gym environment using blackbox.environment_utils.EnvironmentWrapper funcs</p></li>
+<li><p><strong>policy</strong> (<a class="reference internal" href="../policies/policies.html#blackbox_mpc.policies.ModelFreeBasePolicy" title="blackbox_mpc.policies.ModelFreeBasePolicy"><em>ModelFreeBasePolicy</em></a><em> or </em><a class="reference internal" href="../policies/policies.html#blackbox_mpc.policies.ModelBasedBasePolicy" title="blackbox_mpc.policies.ModelBasedBasePolicy"><em>ModelBasedBasePolicy</em></a>) -- the policy used for learning the dynamics.</p></li>
+<li><p><strong>number_of_rollouts</strong> (<em>Int</em>) -- Number of rollouts/ episodes to perform for each of the agents in the vectorized environment.</p></li>
+<li><p><strong>task_horizon</strong> (<em>Int</em>) -- The task horizon/ episode length.</p></li>
+<li><p><strong>dynamics_function</strong> (<em>DeterministicDynamicsFunctionBaseClass</em>) -- Defines the system dynamics function.</p></li>
+<li><p><strong>learning_rate</strong> (<em>float</em>) -- Learning rate to be used in training the dynamics function.</p></li>
+<li><p><strong>epochs</strong> (<em>Int</em>) -- Number of epochs to be used in training the dynamics function everytime train is called.</p></li>
+<li><p><strong>validation_split</strong> (<em>float32</em>) -- Defines the validation split to be used of the rollouts collected.</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em>) -- Defines the batch size to be used for training the model.</p></li>
+<li><p><strong>nn_optimizer</strong> (<em>tf.keras.optimizers</em>) -- Defines the optimizer to use with the neural network.</p></li>
+<li><p><strong>is_normalized</strong> (<em>bool</em>) -- Defines if the dynamics function should be trained with normalization or not.</p></li>
+<li><p><strong>log_dir</strong> (<em>string</em>) -- Defines the log directory to save the normalization statistics in.</p></li>
+<li><p><strong>tf_writer</strong> (<em>tf.summary</em>) -- Tensorflow writer to be used in logging the data.</p></li>
+<li><p><strong>system_dynamics_handler</strong> (<a class="reference internal" href="../dynamics_handlers/dynamics_handlers.html#blackbox_mpc.dynamics_handlers.SystemDynamicsHandler" title="blackbox_mpc.dynamics_handlers.SystemDynamicsHandler"><em>SystemDynamicsHandler</em></a>) -- The system_dynamics_handler is a handler of the state, actions and targets processing funcs as well</p></li>
+<li><p><strong>saved_model_dir</strong> (<em>string</em>) -- Defines the saved model directory where the model is saved in, in case of loading the model.</p></li>
+<li><p><strong>save_model_frequency</strong> (<em>Int</em>) -- Defines how often the model should be saved (defined relative to the number of refining iters)</p></li>
+<li><p><strong>start_episode</strong> (<em>Int</em>) -- the episode index for tensorflow logging purposes</p></li>
+<li><p><strong>exploration_noise</strong> (<em>bool</em>) -- Defines if exploration noise should be added to the action to be executed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>system_dynamics_handler</strong> -- The system_dynamics_handler holds the trained system dynamics.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../dynamics_handlers/dynamics_handlers.html#blackbox_mpc.dynamics_handlers.SystemDynamicsHandler" title="blackbox_mpc.dynamics_handlers.SystemDynamicsHandler">SystemDynamicsHandler</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-blackbox_mpc.utils.iterative_mpc">
+<span id="model-based-rl"></span><h2>Model Based RL<a class="headerlink" href="#module-blackbox_mpc.utils.iterative_mpc" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="blackbox_mpc.utils.iterative_mpc.learn_dynamics_iteratively_w_mpc">
+<code class="sig-prename descclassname">blackbox_mpc.utils.iterative_mpc.</code><code class="sig-name descname">learn_dynamics_iteratively_w_mpc</code><span class="sig-paren">(</span><em class="sig-param">env</em>, <em class="sig-param">number_of_initial_rollouts</em>, <em class="sig-param">number_of_rollouts_for_refinement</em>, <em class="sig-param">number_of_refinement_steps</em>, <em class="sig-param">task_horizon</em>, <em class="sig-param">env_action_space=None</em>, <em class="sig-param">env_observation_space=None</em>, <em class="sig-param">initial_policy=None</em>, <em class="sig-param">refinement_policy=None</em>, <em class="sig-param">planning_horizon=None</em>, <em class="sig-param">reward_function=None</em>, <em class="sig-param">is_normalized=True</em>, <em class="sig-param">optimizer_name='CEM'</em>, <em class="sig-param">optimizer=None</em>, <em class="sig-param">num_agents=None</em>, <em class="sig-param">nn_optimizer=&lt;class 'tensorflow.python.keras.optimizer_v2.adam.Adam'&gt;</em>, <em class="sig-param">dynamics_function=None</em>, <em class="sig-param">system_dynamics_handler=None</em>, <em class="sig-param">log_dir=None</em>, <em class="sig-param">tf_writer=None</em>, <em class="sig-param">save_model_frequency=1</em>, <em class="sig-param">saved_model_dir=None</em>, <em class="sig-param">exploration_noise=False</em>, <em class="sig-param">epochs=30</em>, <em class="sig-param">learning_rate=0.001</em>, <em class="sig-param">validation_split=0.2</em>, <em class="sig-param">batch_size=128</em>, <em class="sig-param">start_episode=0</em>, <em class="sig-param">**optimizer_args</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/blackbox_mpc/utils/iterative_mpc.html#learn_dynamics_iteratively_w_mpc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#blackbox_mpc.utils.iterative_mpc.learn_dynamics_iteratively_w_mpc" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the learn dynamics function iteratively using mpc policy
+for the runner class which samples n rollouts using an initial policy and then
+uses these rollouts to learn a dynamics function for the system which is then used to _sample further rollouts
+to refine the dynamics function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env</strong> (<em>parallelgymEnv</em>) -- a wrapped gym environment using blackbox.environment_utils.EnvironmentWrapper funcs</p></li>
+<li><p><strong>env_action_space</strong> (<em>gym.ActionSpace</em>) -- Defines the action space of the gym environment.</p></li>
+<li><p><strong>env_observation_space</strong> (<em>gym.ObservationSpace</em>) -- Defines the observation space of the gym environment.</p></li>
+<li><p><strong>num_agents</strong> (<em>tf.int32</em>) -- Defines the number of runner running in parallel</p></li>
+<li><p><strong>dynamics_function</strong> (<em>DeterministicDynamicsFunctionBaseClass</em>) -- Defines the system dynamics function.</p></li>
+<li><p><strong>system_dynamics_handler</strong> (<a class="reference internal" href="../dynamics_handlers/dynamics_handlers.html#blackbox_mpc.dynamics_handlers.SystemDynamicsHandler" title="blackbox_mpc.dynamics_handlers.SystemDynamicsHandler"><em>SystemDynamicsHandler</em></a>) -- The system_dynamics_handler is a handler of the state, actions and
+targets processing funcs as well.</p></li>
+<li><p><strong>number_of_initial_rollouts</strong> (<em>Int</em>) -- Number of initial rollouts/ episodes to perform for each of the agents in the vectorized environment.</p></li>
+<li><p><strong>number_of_rollouts_for_refinement</strong> (<em>Int</em>) -- Number of refinement rollouts/ episodes to perform for each of the agents in the vectorized environment.</p></li>
+<li><p><strong>number_of_refinement_steps</strong> (<em>Int</em>) -- Number of refinemnet steps train, collect, train..etc to run for.</p></li>
+<li><p><strong>task_horizon</strong> (<em>Int</em>) -- The task horizon/ episode length.</p></li>
+<li><p><strong>initial_policy</strong> (<a class="reference internal" href="../policies/policies.html#blackbox_mpc.policies.ModelBasedBasePolicy" title="blackbox_mpc.policies.ModelBasedBasePolicy"><em>ModelBasedBasePolicy</em></a><em> or </em><a class="reference internal" href="../policies/policies.html#blackbox_mpc.policies.ModelFreeBasePolicy" title="blackbox_mpc.policies.ModelFreeBasePolicy"><em>ModelFreeBasePolicy</em></a>) -- The policy to be used in collecting the initial episodes from the different agents.</p></li>
+<li><p><strong>refinement_policy</strong> (<a class="reference internal" href="../policies/policies.html#blackbox_mpc.policies.ModelBasedBasePolicy" title="blackbox_mpc.policies.ModelBasedBasePolicy"><em>ModelBasedBasePolicy</em></a>) -- The policy to be used in collecting the followup episodes to refine the policy.</p></li>
+<li><p><strong>exploration_noise</strong> (<em>bool</em>) -- If noise should be added to the actions to help in exploration.</p></li>
+<li><p><strong>learning_rate</strong> (<em>float</em>) -- Learning rate to be used in training the dynamics function.</p></li>
+<li><p><strong>epochs</strong> (<em>Int</em>) -- Number of epochs to be used in training the dynamics function everytime train is called.</p></li>
+<li><p><strong>validation_split</strong> (<em>float32</em>) -- Defines the validation split to be used of the rollouts collected.</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em>) -- Defines the batch size to be used for training the model.</p></li>
+<li><p><strong>nn_optimizer</strong> (<em>tf.keras.optimizers</em>) -- Defines the optimizer to use with the neural network.</p></li>
+<li><p><strong>is_normalized</strong> (<em>bool</em>) -- Defines if the dynamics function should be trained with normalization or not.</p></li>
+<li><p><strong>reward_function</strong> (<em>tf_function</em>) -- Defines the reward function with the prototype: tf_func_name(current_state, current_actions, next_state),
+where current_state is BatchXdim_S, next_state is BatchXdim_S and  current_actions is BatchXdim_U.</p></li>
+<li><p><strong>planning_horizon</strong> (<em>tf.int32</em>) -- Defines the planning horizon for the optimizer (how many steps to lookahead and optimize for).</p></li>
+<li><p><strong>optimizer</strong> (<em>OptimizerBaseClass</em>) -- Optimizer to be used that optimizes for the best action sequence and returns the first action.</p></li>
+<li><p><strong>optimizer_name</strong> (<em>str</em>) -- optimizer name between in ['CEM', 'CMA-ES', 'PI2', 'RandomSearch', 'PSO', 'SPSA'].</p></li>
+<li><p><strong>saved_model_dir</strong> (<em>string</em>) -- Defines the saved model directory where the model is saved in, in case of loading the model.</p></li>
+<li><p><strong>save_model_frequency</strong> (<em>Int</em>) -- Defines how often the model should be saved (defined relative to the number of refining iters)</p></li>
+<li><p><strong>start_episode</strong> (<em>Int</em>) -- the episode index for tensorflow logging purposes</p></li>
+<li><p><strong>exploration_noise</strong> -- Defines if exploration noise should be added to the action to be executed.</p></li>
+<li><p><strong>log_dir</strong> (<em>string</em>) -- Defines the log directory to save the normalization statistics in.</p></li>
+<li><p><strong>tf_writer</strong> (<em>tf.summary</em>) -- Tensorflow writer to be used in logging the data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>system_dynamics_handler</strong> (<em>SystemDynamicsHandler</em>) -- The system_dynamics_handler holds the trained system dynamics.</p></li>
+<li><p><strong>mpc_policy</strong> (<em>ModelBasedBasePolicy</em>) -- The policy that was refined to be used as a control policy</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-blackbox_mpc.utils.pendulum">
+<span id="pendulum-reward-function"></span><h2>Pendulum Reward Function<a class="headerlink" href="#module-blackbox_mpc.utils.pendulum" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="blackbox_mpc.utils.pendulum.pendulum_reward_function">
+<code class="sig-prename descclassname">blackbox_mpc.utils.pendulum.</code><code class="sig-name descname">pendulum_reward_function</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">current_state</span></em>, <em class="sig-param"><span class="n">next_state</span></em>, <em class="sig-param"><span class="n">actions</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/blackbox_mpc/utils/pendulum.html#pendulum_reward_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#blackbox_mpc.utils.pendulum.pendulum_reward_function" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>The pendulum state reward function</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>current_state</strong> (<em>tf.float32</em>) -- represents the current state of the system (Bxdim_S)</p></li>
+<li><p><strong>next_state</strong> (<em>tf.float32</em>) -- represents the next state of the system (Bxdim_S)</p></li>
+<li><p><strong>Returns</strong> -- <dl class="simple">
+<dt>rewards: tf.float32</dt><dd><p>The reward corresponding to each of the pairs current_state, next_state</p>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="pendulum-true-model">
+<h2>Pendulum True Model<a class="headerlink" href="#pendulum-true-model" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="blackbox_mpc.utils.pendulum.PendulumTrueModel">
+<em class="property">class </em><code class="sig-prename descclassname">blackbox_mpc.utils.pendulum.</code><code class="sig-name descname">PendulumTrueModel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/blackbox_mpc/utils/pendulum.html#PendulumTrueModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#blackbox_mpc.utils.pendulum.PendulumTrueModel" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="blackbox_mpc.utils.pendulum.PendulumTrueModel.__call__">
+<code class="sig-name descname">__call__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">train</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/blackbox_mpc/utils/pendulum.html#PendulumTrueModel.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#blackbox_mpc.utils.pendulum.PendulumTrueModel.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the call function for the pendulum true model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>tf.float32</em>) -- Defines the (s_t, a_t) which is the state and action stacked on top of each other,
+(dims = Batch X (dim_S + dim_U)) [cos(theta), sin(theta), dtheta, u]</p></li>
+<li><p><strong>train</strong> (<em>tf.bool</em>) -- Placeholder to confirm with the base class.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>output</strong> -- Defines the next state (s_t+1) with (dims = Batch X dim_S), [cos(theta), sin(theta), dtheta]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tf.float32</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="blackbox_mpc.utils.pendulum.PendulumTrueModel.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/blackbox_mpc/utils/pendulum.html#PendulumTrueModel.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#blackbox_mpc.utils.pendulum.PendulumTrueModel.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the pendulum true model for the gym environment</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>String</em>) -- Defines the name of the block of the pendulum true model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-blackbox_mpc.utils.recording">
+<span id="recording-videos"></span><h2>Recording Videos<a class="headerlink" href="#module-blackbox_mpc.utils.recording" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="blackbox_mpc.utils.recording.record_rollout">
+<code class="sig-prename descclassname">blackbox_mpc.utils.recording.</code><code class="sig-name descname">record_rollout</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">env</span></em>, <em class="sig-param"><span class="n">horizon</span></em>, <em class="sig-param"><span class="n">policy</span></em>, <em class="sig-param"><span class="n">record_file_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/blackbox_mpc/utils/recording.html#record_rollout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#blackbox_mpc.utils.recording.record_rollout" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the recording function for the runner class which samples one episode with a specified length
+using the provided policy and records it in a video.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>horizon</strong> (<em>Int</em>) -- The task horizon/ episode length.</p></li>
+<li><p><strong>policy</strong> (<a class="reference internal" href="../policies/policies.html#blackbox_mpc.policies.ModelBasedBasePolicy" title="blackbox_mpc.policies.ModelBasedBasePolicy"><em>ModelBasedBasePolicy</em></a><em> or </em><a class="reference internal" href="../policies/policies.html#blackbox_mpc.policies.ModelFreeBasePolicy" title="blackbox_mpc.policies.ModelFreeBasePolicy"><em>ModelFreeBasePolicy</em></a>) -- The policy to be used in collecting the episodes from the different agents.</p></li>
+<li><p><strong>record_file_path</strong> (<em>String</em>) -- specified the file path to save the video that will be recorded in.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-blackbox_mpc.utils.rollouts">
+<span id="rollout-collection"></span><h2>Rollout Collection<a class="headerlink" href="#module-blackbox_mpc.utils.rollouts" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="blackbox_mpc.utils.rollouts.perform_rollouts">
+<code class="sig-prename descclassname">blackbox_mpc.utils.rollouts.</code><code class="sig-name descname">perform_rollouts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">env</span></em>, <em class="sig-param"><span class="n">number_of_rollouts</span></em>, <em class="sig-param"><span class="n">task_horizon</span></em>, <em class="sig-param"><span class="n">policy</span></em>, <em class="sig-param"><span class="n">exploration_noise</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">tf_writer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">start_episode</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/blackbox_mpc/utils/rollouts.html#perform_rollouts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#blackbox_mpc.utils.rollouts.perform_rollouts" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the perform_rollouts function for the runner class which samples n episodes with a specified length
+using the provided policy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env</strong> (<em>parallelgymEnv</em>) -- a wrapped gym environment using blackbox.environment_utils.EnvironmentWrapper funcs</p></li>
+<li><p><strong>number_of_rollouts</strong> (<em>Int</em>) -- Number of rollouts/ episodes to perform for each of the agents in the vectorized environment.</p></li>
+<li><p><strong>task_horizon</strong> (<em>Int</em>) -- The task horizon/ episode length.</p></li>
+<li><p><strong>policy</strong> (<a class="reference internal" href="../policies/policies.html#blackbox_mpc.policies.ModelBasedBasePolicy" title="blackbox_mpc.policies.ModelBasedBasePolicy"><em>ModelBasedBasePolicy</em></a><em> or </em><a class="reference internal" href="../policies/policies.html#blackbox_mpc.policies.ModelFreeBasePolicy" title="blackbox_mpc.policies.ModelFreeBasePolicy"><em>ModelFreeBasePolicy</em></a>) -- The policy to be used in collecting the episodes from the different agents.</p></li>
+<li><p><strong>exploration_noise</strong> (<em>bool</em>) -- If noise should be added to the actions to help in exploration.</p></li>
+<li><p><strong>tf_writer</strong> (<em>tf.summary</em>) -- Tensorflow writer to be used in logging the data.</p></li>
+<li><p><strong>start_episode</strong> (<em>Int</em>) -- the episode index for tensorflow logging purposes</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>traj_obs</strong> (<em>[np.float32]</em>) -- List with length=number_of_rollouts which holds the observations starting from the reset observations.</p></li>
+<li><p><strong>traj_acs</strong> (<em>[np.float32]</em>) -- List with length=number_of_rollouts which holds the actions taken by the policy.</p></li>
+<li><p><strong>traj_rews</strong> (<em>[np.float32]</em>) -- List with length=number_of_rollouts which holds the rewards taken by the policy.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-blackbox_mpc.utils.transforms">
+<span id="target-transforms"></span><h2>Target transforms<a class="headerlink" href="#module-blackbox_mpc.utils.transforms" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="blackbox_mpc.utils.transforms.default_inverse_transform_targets">
+<code class="sig-prename descclassname">blackbox_mpc.utils.transforms.</code><code class="sig-name descname">default_inverse_transform_targets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">current_state</span></em>, <em class="sig-param"><span class="n">delta</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/blackbox_mpc/utils/transforms.html#default_inverse_transform_targets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#blackbox_mpc.utils.transforms.default_inverse_transform_targets" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the default inverse transform targets function used, which reverses the preprocessing of  the targets of
+the dynamics function to obtain the real current_state not the relative one,
+The default one is (current_state = target + current_state).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>current_state</strong> (<em>tf.float32</em>) -- The current_state has a shape of (Batch X dim_S)</p></li>
+<li><p><strong>delta</strong> (<em>tf.float32</em>) -- The delta has a shape of (Batch X dim_S) which is equivilant to the target of the network.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="blackbox_mpc.utils.transforms.default_transform_targets">
+<code class="sig-prename descclassname">blackbox_mpc.utils.transforms.</code><code class="sig-name descname">default_transform_targets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">current_state</span></em>, <em class="sig-param"><span class="n">next_state</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/blackbox_mpc/utils/transforms.html#default_transform_targets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#blackbox_mpc.utils.transforms.default_transform_targets" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the default transform targets function used, which preprocesses the targets of the network before training the
+dynamics function using the inputs and targets. The default one is (target = next_state - current_state).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>current_state</strong> (<em>tf.float32</em>) -- The current_state has a shape of (Batch X dim_S)</p></li>
+<li><p><strong>next_state</strong> (<em>tf.float32</em>) -- The next_state has a shape of (Batch X dim_S)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../environment_utils/environment_utils.html" class="btn btn-neutral float-left" title="Environment Utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Ossama Ahmed and Jonas Ruthfuss
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,448 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>blackbox_mpc.policies.mpc_policy &mdash; blackbox_mpc 0.3 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> blackbox_mpc
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/getting_started.html">Getting Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/blackbox_mpc.html">blackbox_mpc</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">blackbox_mpc</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>blackbox_mpc.policies.mpc_policy</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for blackbox_mpc.policies.mpc_policy</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">blackbox_mpc.policies.model_based_base_policy</span> <span class="kn">import</span> <span class="n">ModelBasedBasePolicy</span>
+<span class="kn">from</span> <span class="nn">blackbox_mpc.trajectory_evaluators.deterministic</span> <span class="kn">import</span> \
+    <span class="n">DeterministicTrajectoryEvaluator</span>
+<span class="kn">from</span> <span class="nn">blackbox_mpc.dynamics_handlers.system_dynamics_handler</span> <span class="kn">import</span> \
+    <span class="n">SystemDynamicsHandler</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="MPCPolicy"><a class="viewcode-back" href="../../../modules/policies/policies.html#blackbox_mpc.policies.MPCPolicy">[docs]</a><span class="k">class</span> <span class="nc">MPCPolicy</span><span class="p">(</span><span class="n">ModelBasedBasePolicy</span><span class="p">):</span>
+<div class="viewcode-block" id="MPCPolicy.__init__"><a class="viewcode-back" href="../../../modules/policies/policies.html#blackbox_mpc.policies.MPCPolicy.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trajectory_evaluator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">optimizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tf_writer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">log_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reward_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">env_action_space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">env_observation_space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">dynamics_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dynamics_handler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">true_model</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">optimizer_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">num_agents</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">save_model_frequency</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">saved_model_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">optimizer_args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            This is the model predictive control policy for controlling the agent</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ---------</span>
+<span class="sd">        trajectory_evaluator: EvaluatorBase</span>
+<span class="sd">            Defines the trajectory evaluator to be used in the optimizer to</span>
+<span class="sd">            evaluate trajectories.</span>
+<span class="sd">        tf_writer: tf.summary</span>
+<span class="sd">            Tensorflow writer to be used in logging the data.</span>
+<span class="sd">        optimizer_name: str</span>
+<span class="sd">            optimizer name between in [&#39;CEM&#39;, &#39;CMA-ES&#39;, &#39;PI2&#39;, &#39;RandomSearch&#39;, &#39;PSO&#39;, &#39;SPSA&#39;].</span>
+<span class="sd">        env_action_space: gym.ActionSpace</span>
+<span class="sd">            Defines the action space of the gym environment.</span>
+<span class="sd">        env_observation_space: gym.ObservationSpace</span>
+<span class="sd">            Defines the observation space of the gym environment.</span>
+<span class="sd">        dynamics_function: DeterministicDynamicsFunctionBaseClass</span>
+<span class="sd">            Defines the system dynamics function.</span>
+<span class="sd">        dynamics_handler: SystemDynamicsHandler</span>
+<span class="sd">            The system_dynamics_handler is a handler of the state, actions and targets processing funcs as well</span>
+<span class="sd">            as the dynamics function.</span>
+<span class="sd">        reward_function: tf_function</span>
+<span class="sd">            Defines the reward function with the prototype: tf_func_name(current_state, current_actions, next_state),</span>
+<span class="sd">            where current_state is BatchXdim_S, next_state is BatchXdim_S and  current_actions is BatchXdim_U.</span>
+<span class="sd">        true_model: bool</span>
+<span class="sd">            boolean defining if its a true model dynamics or not.</span>
+<span class="sd">        log_dir: string</span>
+<span class="sd">            Defines the log directory to save the normalization statistics in.</span>
+<span class="sd">        num_agents: tf.int32</span>
+<span class="sd">            Defines the number of runner running in parallel</span>
+<span class="sd">        saved_model_dir: string</span>
+<span class="sd">            Defines the saved model directory where the model is saved in, in case of loading the model.</span>
+<span class="sd">        save_model_frequency: Int</span>
+<span class="sd">            Defines how often the model should be saved (defined relative to the number of refining iters)</span>
+<span class="sd">        optimizer_args: args</span>
+<span class="sd">            other arguments specific to the optimizer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">trajectory_evaluator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dynamics_handler</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">trajectory_evaluator</span> <span class="o">=</span> \
+                    <span class="n">DeterministicTrajectoryEvaluator</span><span class="p">(</span><span class="n">reward_function</span><span class="o">=</span><span class="n">reward_function</span><span class="p">,</span>
+                                                     <span class="n">system_dynamics_handler</span><span class="o">=</span>
+                        <span class="n">SystemDynamicsHandler</span><span class="p">(</span><span class="n">env_action_space</span><span class="o">=</span><span class="n">env_action_space</span><span class="p">,</span>
+                                              <span class="n">env_observation_space</span><span class="o">=</span><span class="n">env_observation_space</span><span class="p">,</span>
+                                              <span class="n">true_model</span><span class="o">=</span><span class="n">true_model</span><span class="p">,</span>
+                                              <span class="n">dynamics_function</span><span class="o">=</span><span class="n">dynamics_function</span><span class="p">,</span>
+                                              <span class="n">log_dir</span><span class="o">=</span><span class="n">log_dir</span><span class="p">,</span>
+                                              <span class="n">tf_writer</span><span class="o">=</span><span class="n">tf_writer</span><span class="p">,</span>
+                                              <span class="n">save_model_frequency</span><span class="o">=</span><span class="n">save_model_frequency</span><span class="p">,</span>
+                                              <span class="n">saved_model_dir</span><span class="o">=</span><span class="n">saved_model_dir</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">trajectory_evaluator</span> <span class="o">=</span> \
+                    <span class="n">DeterministicTrajectoryEvaluator</span><span class="p">(</span>
+                        <span class="n">reward_function</span><span class="o">=</span><span class="n">reward_function</span><span class="p">,</span>
+                        <span class="n">system_dynamics_handler</span><span class="o">=</span><span class="n">dynamics_handler</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MPCPolicy</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">trajectory_evaluator</span><span class="o">=</span>
+                                        <span class="n">trajectory_evaluator</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">optimizer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">num_agents</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Please Specify Num Of Agents in the MPC&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">optimizer_name</span> <span class="o">==</span> <span class="s1">&#39;CEM&#39;</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">blackbox_mpc.optimizers.cem</span> <span class="kn">import</span> <span class="n">CEMOptimizer</span>
+                <span class="n">optimizer</span> <span class="o">=</span> <span class="n">CEMOptimizer</span><span class="p">(</span><span class="n">env_action_space</span><span class="o">=</span><span class="n">env_action_space</span><span class="p">,</span>
+                                         <span class="n">env_observation_space</span><span class="o">=</span><span class="n">env_observation_space</span><span class="p">,</span>
+                                         <span class="n">num_agents</span><span class="o">=</span><span class="n">num_agents</span><span class="p">,</span>
+                                         <span class="o">**</span><span class="n">optimizer_args</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">optimizer_name</span> <span class="o">==</span> <span class="s1">&#39;CMA-ES&#39;</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">blackbox_mpc.optimizers.cma_es</span> <span class="kn">import</span> <span class="n">CMAESOptimizer</span>
+                <span class="n">optimizer</span> <span class="o">=</span> <span class="n">CMAESOptimizer</span><span class="p">(</span><span class="n">env_action_space</span><span class="o">=</span><span class="n">env_action_space</span><span class="p">,</span>
+                                           <span class="n">env_observation_space</span><span class="o">=</span><span class="n">env_observation_space</span><span class="p">,</span>
+                                           <span class="n">num_agents</span><span class="o">=</span><span class="n">num_agents</span><span class="p">,</span>
+                                           <span class="o">**</span><span class="n">optimizer_args</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">optimizer_name</span> <span class="o">==</span> <span class="s1">&#39;PI2&#39;</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">blackbox_mpc.optimizers.pi2</span> <span class="kn">import</span> <span class="n">PI2Optimizer</span>
+                <span class="n">optimizer</span> <span class="o">=</span> <span class="n">PI2Optimizer</span><span class="p">(</span><span class="n">env_action_space</span><span class="o">=</span><span class="n">env_action_space</span><span class="p">,</span>
+                                         <span class="n">env_observation_space</span><span class="o">=</span><span class="n">env_observation_space</span><span class="p">,</span>
+                                         <span class="n">num_agents</span><span class="o">=</span><span class="n">num_agents</span><span class="p">,</span>
+                                         <span class="o">**</span><span class="n">optimizer_args</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">optimizer_name</span> <span class="o">==</span> <span class="s1">&#39;PSO&#39;</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">blackbox_mpc.optimizers.pso</span> <span class="kn">import</span> <span class="n">PSOOptimizer</span>
+                <span class="n">optimizer</span> <span class="o">=</span> <span class="n">PSOOptimizer</span><span class="p">(</span><span class="n">env_action_space</span><span class="o">=</span><span class="n">env_action_space</span><span class="p">,</span>
+                                         <span class="n">env_observation_space</span><span class="o">=</span><span class="n">env_observation_space</span><span class="p">,</span>
+                                         <span class="n">num_agents</span><span class="o">=</span><span class="n">num_agents</span><span class="p">,</span>
+                                         <span class="o">**</span><span class="n">optimizer_args</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">optimizer_name</span> <span class="o">==</span> <span class="s1">&#39;SPSA&#39;</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">blackbox_mpc.optimizers.spsa</span> <span class="kn">import</span> <span class="n">SPSAOptimizer</span>
+                <span class="n">optimizer</span> <span class="o">=</span> <span class="n">SPSAOptimizer</span><span class="p">(</span><span class="n">env_action_space</span><span class="o">=</span><span class="n">env_action_space</span><span class="p">,</span>
+                                          <span class="n">env_observation_space</span><span class="o">=</span><span class="n">env_observation_space</span><span class="p">,</span>
+                                          <span class="n">num_agents</span><span class="o">=</span><span class="n">num_agents</span><span class="p">,</span>
+                                          <span class="o">**</span><span class="n">optimizer_args</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">optimizer_name</span> <span class="o">==</span> <span class="s1">&#39;RandomSearch&#39;</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">blackbox_mpc.optimizers.random_search</span> <span class="kn">import</span> <span class="n">RandomSearchOptimizer</span>
+                <span class="n">optimizer</span> <span class="o">=</span> <span class="n">RandomSearchOptimizer</span><span class="p">(</span><span class="n">env_action_space</span><span class="o">=</span><span class="n">env_action_space</span><span class="p">,</span>
+                                                  <span class="n">env_observation_space</span><span class="o">=</span><span class="n">env_observation_space</span><span class="p">,</span>
+                                                  <span class="n">num_agents</span><span class="o">=</span><span class="n">num_agents</span><span class="p">,</span>
+                                                  <span class="o">**</span><span class="n">optimizer_args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_writer</span> <span class="o">=</span> <span class="n">tf_writer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trajectory_evaluator</span> <span class="o">=</span> <span class="n">trajectory_evaluator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">set_trajectory_evaluator</span><span class="p">(</span><span class="n">trajectory_evaluator</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_act_call_counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="MPCPolicy.act"><a class="viewcode-back" href="../../../modules/policies/policies.html#blackbox_mpc.policies.MPCPolicy.act">[docs]</a>    <span class="k">def</span> <span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="n">observations</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">exploration_noise</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is the act function for the model predictive control policy, which should be called to provide the action</span>
+<span class="sd">        to be executed at the current time step.</span>
+
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ---------</span>
+<span class="sd">        observations: tf.float32</span>
+<span class="sd">            Defines the current observations received from the environment.</span>
+<span class="sd">        t: tf.float32</span>
+<span class="sd">            Defines the current timestep.</span>
+<span class="sd">        exploration_noise: bool</span>
+<span class="sd">            Defines if exploration noise should be added to the action to be executed.</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        action: tf.float32</span>
+<span class="sd">            The action to be executed for each of the runner (dims = runner X dim_U)</span>
+<span class="sd">        next_observations: tf.float32</span>
+<span class="sd">            The next observations predicted using the dynamics function learned so far.</span>
+<span class="sd">        rewards_of_next_state: tf.float32</span>
+<span class="sd">            The predicted reward if the action was executed using the predicted observations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">batched_observations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">observations</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">observations</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+           <span class="n">batched_observations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">observations</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                                          <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">_num_agents</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+        <span class="n">current_state</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">batched_observations</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">mean</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">rewards_of_next_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="p">(</span><span class="n">current_state</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span>
+                                                                  <span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="n">exploration_noise</span><span class="p">,</span>
+                                                                             <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">bool</span><span class="p">))</span>
+        <span class="n">log_results</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">log_results</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_writer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_writer</span><span class="o">.</span><span class="n">as_default</span><span class="p">():</span>
+                    <span class="n">tf</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s1">&#39;rewards/predicted_reward&#39;</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">rewards_of_next_state</span><span class="p">),</span>
+                                      <span class="n">step</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_act_call_counter</span><span class="p">)</span>
+        <span class="n">next_observations</span> <span class="o">=</span> <span class="n">next_state</span>
+        <span class="n">result_action</span> <span class="o">=</span> <span class="n">mean</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="n">next_observations</span> <span class="o">=</span> <span class="n">next_observations</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_act_call_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">observations</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">result_action</span> <span class="o">=</span> <span class="n">result_action</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">next_observations</span> <span class="o">=</span> <span class="n">next_observations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">rewards_of_next_state</span> <span class="o">=</span> <span class="n">rewards_of_next_state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">result_action</span><span class="p">,</span> <span class="n">next_observations</span><span class="p">,</span> <span class="n">rewards_of_next_state</span></div>
+
+<div class="viewcode-block" id="MPCPolicy.reset"><a class="viewcode-back" href="../../../modules/policies/policies.html#blackbox_mpc.policies.MPCPolicy.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is the reset function for the model predictive control policy, which should be called at the beginning of</span>
+<span class="sd">        the episode.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MPCPolicy.switch_optimizer"><a class="viewcode-back" href="../../../modules/policies/policies.html#blackbox_mpc.policies.MPCPolicy.switch_optimizer">[docs]</a>    <span class="k">def</span> <span class="nf">switch_optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">optimizer_name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                         <span class="o">**</span><span class="n">optimizer_args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function is used to switch the optimizer of model predictive control policy.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        optimizer: OptimizerBaseClass</span>
+<span class="sd">            Optimizer to be used that optimizes for the best action sequence and returns the first action.</span>
+<span class="sd">        optimizer_name: str</span>
+<span class="sd">            optimizer name between in [&#39;CEM&#39;, &#39;CMA-ES&#39;, &#39;PI2&#39;, &#39;RandomSearch&#39;, &#39;PSO&#39;, &#39;SPSA&#39;].</span>
+<span class="sd">        optimizer_args: args</span>
+<span class="sd">            other arguments specific to the optimizer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">optimizer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">optimizer_name</span> <span class="o">==</span> <span class="s1">&#39;CEM&#39;</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">blackbox_mpc.optimizers.cem</span> <span class="kn">import</span> <span class="n">CEMOptimizer</span>
+                <span class="n">optimizer</span> <span class="o">=</span> <span class="n">CEMOptimizer</span><span class="p">(</span><span class="n">env_action_space</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">_env_action_space</span><span class="p">,</span>
+                                         <span class="n">env_observation_space</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">_env_observation_space</span><span class="p">,</span>
+                                         <span class="n">num_agents</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">_num_agents</span><span class="p">,</span>
+                                         <span class="o">**</span><span class="n">optimizer_args</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
+            <span class="k">elif</span> <span class="n">optimizer_name</span> <span class="o">==</span> <span class="s1">&#39;CMA-ES&#39;</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">blackbox_mpc.optimizers.cma_es</span> <span class="kn">import</span> <span class="n">CMAESOptimizer</span>
+                <span class="n">optimizer</span> <span class="o">=</span> <span class="n">CMAESOptimizer</span><span class="p">(</span>
+                    <span class="n">env_action_space</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">_env_action_space</span><span class="p">,</span>
+                    <span class="n">env_observation_space</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">_env_observation_space</span><span class="p">,</span>
+                    <span class="n">num_agents</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">_num_agents</span><span class="p">,</span>
+                    <span class="o">**</span><span class="n">optimizer_args</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
+            <span class="k">elif</span> <span class="n">optimizer_name</span> <span class="o">==</span> <span class="s1">&#39;PI2&#39;</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">blackbox_mpc.optimizers.pi2</span> <span class="kn">import</span> <span class="n">PI2Optimizer</span>
+                <span class="n">optimizer</span> <span class="o">=</span> <span class="n">PI2Optimizer</span><span class="p">(</span><span class="n">env_action_space</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">_env_action_space</span><span class="p">,</span>
+                                         <span class="n">env_observation_space</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">_env_observation_space</span><span class="p">,</span>
+                                         <span class="n">num_agents</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">_num_agents</span><span class="p">,</span>
+                                         <span class="o">**</span><span class="n">optimizer_args</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
+            <span class="k">elif</span> <span class="n">optimizer_name</span> <span class="o">==</span> <span class="s1">&#39;PSO&#39;</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">blackbox_mpc.optimizers.pso</span> <span class="kn">import</span> <span class="n">PSOOptimizer</span>
+                <span class="n">optimizer</span> <span class="o">=</span> <span class="n">PSOOptimizer</span><span class="p">(</span><span class="n">env_action_space</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">_env_action_space</span><span class="p">,</span>
+                                         <span class="n">env_observation_space</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">_env_observation_space</span><span class="p">,</span>
+                                         <span class="n">num_agents</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">_num_agents</span><span class="p">,</span>
+                                         <span class="o">**</span><span class="n">optimizer_args</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
+            <span class="k">elif</span> <span class="n">optimizer_name</span> <span class="o">==</span> <span class="s1">&#39;SPSA&#39;</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">blackbox_mpc.optimizers.spsa</span> <span class="kn">import</span> <span class="n">SPSAOptimizer</span>
+                <span class="n">optimizer</span> <span class="o">=</span> <span class="n">SPSAOptimizer</span><span class="p">(</span>
+                    <span class="n">env_action_space</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">_env_action_space</span><span class="p">,</span>
+                    <span class="n">env_observation_space</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">_env_observation_space</span><span class="p">,</span>
+                    <span class="n">num_agents</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">_num_agents</span><span class="p">,</span>
+                    <span class="o">**</span><span class="n">optimizer_args</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
+            <span class="k">elif</span> <span class="n">optimizer_name</span> <span class="o">==</span> <span class="s1">&#39;RandomSearch&#39;</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">blackbox_mpc.optimizers.random_search</span> <span class="kn">import</span> \
+                    <span class="n">RandomSearchOptimizer</span>
+                <span class="n">optimizer</span> <span class="o">=</span> <span class="n">RandomSearchOptimizer</span><span class="p">(</span>
+                    <span class="n">env_action_space</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">_env_action_space</span><span class="p">,</span>
+                    <span class="n">env_observation_space</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">_env_observation_space</span><span class="p">,</span>
+                    <span class="n">num_agents</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">_num_agents</span><span class="p">,</span>
+                    <span class="o">**</span><span class="n">optimizer_args</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">set_trajectory_evaluator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trajectory_evaluator</span><span class="p">)</span>
+        <span class="k">return</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Ossama Ahmed and Jonas Ruthfuss
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

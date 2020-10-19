@@ -1,0 +1,318 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>blackbox_mpc.optimizers.optimizer_base &mdash; blackbox_mpc 0.3 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> blackbox_mpc
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/getting_started.html">Getting Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/blackbox_mpc.html">blackbox_mpc</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">blackbox_mpc</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>blackbox_mpc.optimizers.optimizer_base</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for blackbox_mpc.optimizers.optimizer_base</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="OptimizerBase"><a class="viewcode-back" href="../../../modules/optimizers/optimizers.html#blackbox_mpc.optimizers.OptimizerBase">[docs]</a><span class="k">class</span> <span class="nc">OptimizerBase</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="OptimizerBase.__init__"><a class="viewcode-back" href="../../../modules/optimizers/optimizers.html#blackbox_mpc.optimizers.OptimizerBase.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">planning_horizon</span><span class="p">,</span> <span class="n">max_iterations</span><span class="p">,</span> <span class="n">num_agents</span><span class="p">,</span>
+                 <span class="n">env_action_space</span><span class="p">,</span> <span class="n">env_observation_space</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is the base class of the optimizers</span>
+
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ---------</span>
+<span class="sd">        name: String</span>
+<span class="sd">            Defines the name of the block of the optimizer.</span>
+<span class="sd">        planning_horizon: Int</span>
+<span class="sd">            Defines the planning horizon for the optimizer (how many steps to lookahead and optimize for).</span>
+<span class="sd">        max_iterations: tf.int32</span>
+<span class="sd">            Defines the maximimum iterations for the CEM optimizer to refine its guess for the optimal solution.</span>
+<span class="sd">        num_agents: tf.int32</span>
+<span class="sd">            Defines the number of runner running in parallel</span>
+<span class="sd">        env_action_space: gym.ActionSpace</span>
+<span class="sd">            Defines the action space of the gym environment.</span>
+<span class="sd">        env_observation_space: tf.int32</span>
+<span class="sd">            Defines the observation space of the gym environment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">OptimizerBase</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_planning_horizon</span> <span class="o">=</span> <span class="n">planning_horizon</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_env_action_space</span> <span class="o">=</span> <span class="n">env_action_space</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_env_observation_space</span> <span class="o">=</span> <span class="n">env_observation_space</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dim_U</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="n">env_action_space</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dim_S</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="n">env_observation_space</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_upper_bound</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="n">env_action_space</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
+                                               <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_lower_bound</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="n">env_action_space</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
+                                               <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_upper_bound_horizon</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_action_upper_bound</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_planning_horizon</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_lower_bound_horizon</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_action_lower_bound</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_planning_horizon</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_num_agents</span> <span class="o">=</span> <span class="n">num_agents</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_iterations</span> <span class="o">=</span> <span class="n">max_iterations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trajectory_evaluator</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exploration_variance</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_action_lower_bound</span> <span class="o">-</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">_action_upper_bound</span><span class="p">)</span> <span class="o">/</span>
+                                      <span class="mi">16</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.05</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exploration_mean</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_action_upper_bound</span> <span class="o">+</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">_action_lower_bound</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span></div>
+
+    <span class="k">def</span> <span class="nf">_optimize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="p">,</span> <span class="n">time_step</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;__call__ function is not implemented yet&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="OptimizerBase.__call__"><a class="viewcode-back" href="../../../modules/optimizers/optimizers.html#blackbox_mpc.optimizers.OptimizerBase.__call__">[docs]</a>    <span class="nd">@tf</span><span class="o">.</span><span class="n">function</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_state</span><span class="p">,</span> <span class="n">time_step</span><span class="p">,</span> <span class="n">add_exploration_noise</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">       This is the call function for the Base Optimizer Class.</span>
+<span class="sd">       It is used to calculate the optimal solution for action at the current timestep given the current state.</span>
+
+<span class="sd">       Parameters</span>
+<span class="sd">       ---------</span>
+<span class="sd">       current_state: tf.float32</span>
+<span class="sd">           Defines the current state of the system, (dims=num_of_agents X dim_S)</span>
+<span class="sd">       time_step: tf.float32</span>
+<span class="sd">           Defines the current timestep of the episode.</span>
+<span class="sd">       exploration_noise: tf.bool</span>
+<span class="sd">           Define if the optimal action should have some noise added to it before returning it.</span>
+
+
+<span class="sd">       Returns</span>
+<span class="sd">       -------</span>
+<span class="sd">       resulting_action: tf.float32</span>
+<span class="sd">            The optimal solution for the first action to be applied in the current time step.</span>
+<span class="sd">       next_state: tf.float32</span>
+<span class="sd">            The next state predicted using the dynamics model in the trajectory evaluator.</span>
+<span class="sd">       rewards_of_next_state: tf.float32</span>
+<span class="sd">            The predicted reward achieved after applying the action given by the optimizer.</span>
+<span class="sd">       &quot;&quot;&quot;</span>
+        <span class="n">resulting_action</span> <span class="o">=</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">_optimize</span><span class="p">(</span><span class="n">current_state</span><span class="p">,</span> <span class="n">time_step</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">add_exploration_noise</span><span class="p">:</span>
+            <span class="n">noise</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">truncated_normal</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_agents</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dim_U</span><span class="p">],</span>
+                                               <span class="bp">self</span><span class="o">.</span><span class="n">_exploration_mean</span><span class="p">,</span>
+                                               <span class="n">tf</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_exploration_variance</span><span class="p">),</span>
+                                               <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+            <span class="n">resulting_action</span> <span class="o">=</span> <span class="n">resulting_action</span> <span class="o">+</span> <span class="n">noise</span>
+            <span class="n">resulting_action</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">clip_by_value</span><span class="p">(</span><span class="n">resulting_action</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">_action_lower_bound</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">_action_upper_bound</span><span class="p">)</span>
+        <span class="n">next_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trajectory_evaluator</span><span class="o">.</span><span class="n">predict_next_state</span><span class="p">(</span>
+            <span class="n">current_state</span><span class="p">,</span> <span class="n">resulting_action</span><span class="p">)</span>
+        <span class="n">rewards_of_next_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trajectory_evaluator</span><span class="o">.</span>\
+            <span class="n">evaluate_next_reward</span><span class="p">(</span><span class="n">current_state</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">resulting_action</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">resulting_action</span><span class="p">,</span> <span class="n">next_state</span><span class="p">,</span> <span class="n">rewards_of_next_state</span></div>
+
+<div class="viewcode-block" id="OptimizerBase.reset"><a class="viewcode-back" href="../../../modules/optimizers/optimizers.html#blackbox_mpc.optimizers.OptimizerBase.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">          This method resets the optimizer to its default state at the</span>
+<span class="sd">          beginning of the trajectory/episode.</span>
+<span class="sd">          &quot;&quot;&quot;</span>
+
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;reset function is not implemented yet&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OptimizerBase.set_trajectory_evaluator"><a class="viewcode-back" href="../../../modules/optimizers/optimizers.html#blackbox_mpc.optimizers.OptimizerBase.set_trajectory_evaluator">[docs]</a>    <span class="k">def</span> <span class="nf">set_trajectory_evaluator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trajectory_evaluator</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the trajectory evaluator to be used by the optimizer.</span>
+
+<span class="sd">        :param trajectory_evaluator: (EvaluatorBaseClass) Defines the</span>
+<span class="sd">                trajectory evaluator to be used to evaluate the reward of a</span>
+<span class="sd">                sequence of actions.</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trajectory_evaluator</span> <span class="o">=</span> <span class="n">trajectory_evaluator</span>
+        <span class="k">return</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Ossama Ahmed and Jonas Ruthfuss
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
