@@ -1,7 +1,7 @@
 import setuptools
 setuptools.setup(
      name='blackbox_mpc',
-     version='0.2',
+     version='0.3',
      author="Ossama Ahmed, Jonas Rothfuss",
      author_email="ossama.ahmed@mail.mcgill.ca, jonas.rothfuss@inf.ethz.ch",
      description="BlackBox MPC - Model Predictive Control with"
