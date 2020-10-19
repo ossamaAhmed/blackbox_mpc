@@ -105,7 +105,7 @@ for t in range(200):
 
 ## Documentation
 
-An API specification and explanation of the code components can be found [here](http://ossamaahmed.github.io/TF-NeuralMPC/).
+An API specification and explanation of the code components can be found [here](https://blackbox-mpc.readthedocs.io/en/latest/).
 
 ## Visualize Training
 
