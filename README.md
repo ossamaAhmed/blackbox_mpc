@@ -36,6 +36,15 @@ The package features other functionalities to aid in model-based reinforcement l
 <img src="docs/media/mpc.png" width=400>
 </p>
 
+Optimizers references:
+- [CEM](http://web.mit.edu/6.454/www/www_fall_2003/gew/CEtutorial.pdf)
+- [CMA-ES](https://arxiv.org/pdf/1604.00772.pdf)
+- [PI2](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=7989202)
+- [PSO](https://www.cs.tufts.edu/comp/150GA/homeworks/hw3/_reading6%201995%20particle%20swarming.pdf)
+- [SPSA](https://www.jhuapl.edu/SPSA/PDF-SPSA/Spall_Stochastic_Optimization.PDF)
+
+## Iterative MPC
+
 ## Installation
 
 ### Install as a pip package from latest release
@@ -105,6 +114,7 @@ This package was developed at the [Learning and Adaptive Systems Lab](https://ca
 
 ## If you use the package, please cite blackbox_mpc
 
+```
 @misc{trifinger-simulation,
    author = {Ahmed, Ossama and Rothfuss, Jonas and Krause, Andreas},
    year = {2020},
@@ -112,6 +122,7 @@ This package was developed at the [Learning and Adaptive Systems Lab](https://ca
    journal = {GitHub repository},
    howpublished = {\url{https://github.com/ossamaAhmed/blackbox_mpc}},
 }
+```
 
 ## License
 
@@ -121,3 +132,4 @@ The code is licenced under the MIT license and free to use by anyone without any
 
 - Add bayesian neural networks (BNN) and graph neural networks (GNN) support.
 - Add different trajectory evaluators to propagate uncertainities support.
+

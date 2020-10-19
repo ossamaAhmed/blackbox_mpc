@@ -2,70 +2,114 @@ About BlackBox_MPC
 ==================
 
 
-Despite the impressive results of current RL algorithms, they still face important limitations, namely, low
-_sample efficiency and a propensity not to generalize to seemingly minor changes in the task. These challenges
-suggest that large capacity model-free RL models tend to overfit to the abundant data on which they are trained
-on and hence fail to learn an abstract, interpretable, and generalizable understanding of the underlying problem.
-Model-based RL on the other hand learns a forward model of the environment and then uses it in conjunction
-with a model-predictive controller for instance to control the agent/ robot, the advantage here is that the learned
-forward model can be used in performing different tasks.
+This `package<https://github.com/ossamaAhmed/blackbox_mpc>`_ provides a framework of different derivative-free optimizers (powered by `Tensorflow 2.0.0 <https://www.tensorflow.org/>`_) which can be used in
+conjuction with an MPC (model predictive controller) and an analytical/ learned dynamics model
+to control an agent in a gym environment.
 
-.. image:: mpc.png
+.. image:: ./media/cem.gif
+   :scale: 30 %
+   :alt: CEM
+   :align: left
+
+.. image:: ./media/pi2.gif
+   :scale: 30 %
+   :alt: PI2
+   :align: left
+
+.. image:: ./media/pso.gif
+   :scale: 30 %
+   :alt: PSO
+   :align: left
+
+.. image:: ./media/rs.gif
+   :scale: 30 %
+   :alt: RS
+   :align: left
+
+.. image:: ./media/spsa.gif
+   :scale: 30 %
+   :alt: SPSA
+   :align: left
+
+.. image:: ./media/cma-es.gif
+   :scale: 30 %
+   :alt: CMA-ES
+   :align: left
+
+.. |br| raw:: html
+
+
+
+   <br />
+
+|br| |br| |br| |br| |br| |br| |br| |br| |br| |br| |br| |br| |br| |br| |br| |br| |br|
+
+Derivative-free optimizers available so far:
+
+- Cross-Entropy Method (CEM) - `cem reference <http://web.mit.edu/6.454/www/www_fall_2003/gew/CEtutorial.pdf>`_
+- Covariance Matrix Adaptation Evolutionary-Strategy (CMA-ES) `cma-es reference <https://arxiv.org/pdf/1604.00772.pdf>`_
+- Path Intergral Method (PI2) `pi2 reference <https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=7989202>`_
+- Particle Swarm Optimizer (PSO) `pso reference <https://www.cs.tufts.edu/comp/150GA/homeworks/hw3/_reading6%201995%20particle%20swarming.pdf>`_
+- Random Search (RandomSearch)
+- Simultaneous Perturbation Stochastic Approximation (SPSA) `spsa reference <https://www.jhuapl.edu/SPSA/PDF-SPSA/Spall_Stochastic_Optimization.PDF>`_
+
+.. image:: ./media/mpc.png
    :width: 600
 
-The code repository provides a framework of different derivative-free optimizers which can be used in
-conjuction with a model predictive controller and a learned dynamics model to control an agent in a
-mujoco or a gym environment.
+The package features other functionalities to aid in model-based reinforcement learning (RL) research such as:
 
-The code was written as part of a research project at the Learning and Adaptive Systems Lab @ETH Zurich.
-Overall, the aim of this package is to be enable performing optimal control with  model-predictive control
-on any mujoco or gym environment in couple of steps. An example can be seen below:
+- Parallel implementation of the different optimizers using Tensorflow 2.0
+- Loading/ saving system dynamics model.
+- Monitoring progress using tensorboard.
+- Learning dynamics functions.
+- Recording videos.
+- A modular and flexible interface design to enable research on different trajectory evaluation methods, optimizers, cost functions, system dynamics network architectures or even training algorithms.
+
+The easiest way to get familiar with the framework is to run through the `tutorials <https://github.com/ossamaAhmed/blackbox_mpc/tree/master/tutorials>`_ provided. An example is shown below:
 
 .. code-block:: python
 
+   from blackbox_mpc.policies.mpc_policy import \
+    MPCPolicy
+   from blackbox_mpc.utils.pendulum import PendulumTrueModel, \
+       pendulum_reward_function
+   import gym
 
-   number_of_agents = 5
-   single_env, parallel_env = EnvironmentWrapper.make_standard_gym_env("Pendulum-v0", random_seed=0,
-                                                                    num_of_agents=number_of_agents)
-   my_runner = Runner(env=[single_env, parallel_env],
-                   log_path=None,
-                   num_of_agents=number_of_agents)
-   mpc_controller = my_runner.make_mpc_policy(dynamics_function=PendulumTrueModel(),
-                                           state_reward_function=pendulum_state_reward_function,
-                                           actions_reward_function=pendulum_actions_reward_function,
-                                           planning_horizon=30,
-                                           optimizer_name='PI2',
-                                           true_model=True)
+   env = gym.make("Pendulum-v0")
+   mpc_policy = MPCPolicy(reward_function=pendulum_reward_function,
+                          env_action_space=env.action_space,
+                          env_observation_space=env.observation_space,
+                          true_model=True,
+                          dynamics_function=PendulumTrueModel(),
+                          optimizer_name='RandomSearch',
+                          num_agents=1)
 
-   current_obs = single_env.reset()
-   current_obs = np.tile(np.expand_dims(current_obs, 0),
-                      (number_of_agents, 1))
+   current_obs = env.reset()
    for t in range(200):
-    action_to_execute, expected_obs, expected_reward = mpc_controller.act(current_obs, t)
-    current_obs, reward, _, info = single_env.step(action_to_execute[0])
-    current_obs = np.tile(np.expand_dims(current_obs, 0),
-                          (number_of_agents, 1))
-    single_env.render()
+       action_to_execute, expected_obs, expected_reward = mpc_policy.act(
+           current_obs, t)
+       current_obs, reward, _, info = env.step(action_to_execute)
+       env.render()
 
 
-This high level functionalities of the package are implemented in the Runner class and the overall structure and interaction
-of the code components is depicted in the following figure:
 
-.. image:: flowchart.png
-   :width: 600
 
-There is the option of logging the results in tensorboard and saving the dynamics model trained as the following:
+There is an option of logging some of the training stats in tensorboard as shown below.
 
-.. image:: results.png
-   :width: 1000
-
-.. image:: uncertainity.png
+.. image:: ./media/results.png
    :width: 1000
 
 
 .. toctree::
+   :maxdepth: 2
+   :caption: Guide
+
+   guide/install.rst
+   guide/getting_started.rst
+
+.. toctree::
    :maxdepth: 3
-   :caption: Contents:
+   :caption: API
 
    modules/blackbox_mpc.rst
 

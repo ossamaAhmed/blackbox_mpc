@@ -1,20 +1,6 @@
 """
-This tutorial is meant to show the modular structure of the package,
-and the possibility of extending the functionality of each block further
-if needed in your research.(such as new optimizer or
-a new trajectory evaluator method..etc)
-
-- instantiate an env for a cheetah.
-- Define an MLP to learn a dynamics model
-- Define the system handler that takes care of training the model
-  and processing the rollouts..etc.
-- Define a trajectory evaluator that evaluates the rewards of trajectories.
-- Define an optimizer.
-- instantiate a random policy to collect rollouts
-- instantiate an mpc policy using the previous blocks.
-- learn dynamics from random policy.
-- use the learned dynamics with mpc and render the result
-- record everything in tensorboard
+This tutorial is meant to show how to train a NN dynamics with MPC for the
+cheetah environment.
 """
 from blackbox_mpc.dynamics_functions.deterministic_mlp import \
     DeterministicMLP
@@ -82,6 +68,7 @@ for i in range(9):
                                      system_dynamics_handler=system_dynamics_handler,
                                      batch_size=512,
                                      epochs=100,
+                                     tf_writer=tf_writer,
                                      start_episode=3+(i*5*3))
     record_rollout(env, horizon=1000, policy=mpc_policy,
                    record_file_path='./current_policy_'+str(i+1))
