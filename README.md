@@ -30,8 +30,7 @@ The package features other functionalities to aid in model-based RL research suc
 - Monitoring progress using tensorboard.
 - Learning dynamics functions.
 - Recording videos.
-- A modular and flexible interface design to enable research on different trajectory evaluation methods, optimizers, cost functions,  
-system dynamics network architectures or even training algorithms. 
+- A modular and flexible interface design to enable research on different trajectory evaluation methods, optimizers, cost functions, system dynamics network architectures or even training algorithms. 
  
 <p align=center>
 <img src="docs/media/mpc.png" width=400>
