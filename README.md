@@ -41,7 +41,7 @@ The package features other functionalities to aid in model-based reinforcement l
 ### Install as a pip package from latest release
 
 ```bash
-pip install causal_world
+pip install blackbox_mpc
 ```
 
 ### Install from source
