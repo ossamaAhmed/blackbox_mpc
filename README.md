@@ -99,3 +99,8 @@ This package was developed at the [Learning and Adaptive Systems Lab](https://ca
 ## License
 
 The code is licenced under the MIT license and free to use by anyone without any restrictions.
+
+## TODO
+
+- Add bayesian neural networks (BNN) and graph neural networks (GNN) support.
+- Add different trajectory evaluators to propagate uncertainities support.
