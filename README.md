@@ -84,11 +84,7 @@ for t in range(200):
 
 An API specification and explanation of the code components can be found [here](http://ossamaahmed.github.io/TF-NeuralMPC/).
 
-## Results
-<p align=center>
-<img src="docs/media/results.png" width=1000>
-</p>
-
+## Visualize Training
 
 <p align=center>
 <img src="docs/media/uncertainity.png" width=1000>
