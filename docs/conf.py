@@ -18,7 +18,7 @@ import sphinx_rtd_theme
 
 # Activate the theme.
 
-sys.path.insert(0, os.path.abspath('../src'))
+sys.path.insert(0, os.path.abspath('../'))
 
 
 # -- Project information -----------------------------------------------------
@@ -28,7 +28,7 @@ copyright = '2020, Ossama Ahmed and Jonas Ruthfuss'
 author = 'Ossama Ahmed and Jonas Ruthfuss'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.0'
+release = '0.3'
 
 
 # -- General configuration ---------------------------------------------------
@@ -37,6 +37,7 @@ release = '1.0.0'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinxcontrib.bibtex',
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.coverage',

@@ -1,0 +1,16 @@
+name: blackbox_mpc
+channels:
+- conda-forge
+dependencies:
+- python=3.7.4
+- sphinx
+- jupyter
+- pip:
+  - tensorflow==2.0.0
+  - tensorflow-probability==0.8.0rc0
+  - gym
+  - catkin_pkg
+  - sphinx_rtd_theme
+  - numpy
+  - matplotlib
+  - sphinxcontrib-bibtex

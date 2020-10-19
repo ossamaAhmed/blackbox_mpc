@@ -2,7 +2,7 @@ About BlackBox_MPC
 ==================
 
 
-This `package<https://github.com/ossamaAhmed/blackbox_mpc>`_ provides a framework of different derivative-free optimizers (powered by `Tensorflow 2.0.0 <https://www.tensorflow.org/>`_) which can be used in
+This `package <https://github.com/ossamaAhmed/blackbox_mpc>`_ provides a framework of different derivative-free optimizers (powered by `Tensorflow 2.0.0 <https://www.tensorflow.org/>`_) which can be used in
 conjuction with an MPC (model predictive controller) and an analytical/ learned dynamics model
 to control an agent in a gym environment.
 

@@ -3,7 +3,7 @@
 - instantiate an MPC controller using the true known analytical model
 - define cost/reward functions as used in the openAI gym env.
 - render the resulting MPC afterwards
-- switch optimizer
+- switch optimizer (try CEM, CMA-ES, PSO, RandomSearch, SPSA or PI2)
 - render the resulting MPC afterwards and compare
 """
 from blackbox_mpc.policies.mpc_policy import \
