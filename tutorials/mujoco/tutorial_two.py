@@ -15,7 +15,7 @@ import tensorflow as tf
 log_dir = './'
 tf_writer = tf.summary.create_file_writer(log_dir)
 env = HalfCheetahEnvModified()
-num_of_agents = 10
+num_of_agents = 1
 parallel_env = EnvironmentWrapper.make_custom_gym_env(
                                      HalfCheetahEnvModified,
                                      num_of_agents=num_of_agents)
