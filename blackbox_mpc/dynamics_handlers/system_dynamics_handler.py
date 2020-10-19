@@ -210,7 +210,7 @@ class SystemDynamicsHandler(object):
                                  learning_rate=learning_rate, epochs=epochs,
                                  nn_optimizer=nn_optimizer)
         self._training_iter += 1
-        if self._training_iter%self._save_model_frequency == 0 and \
+        if self._training_iter % self._save_model_frequency == 0 and \
                 self._log_dir is not None:
             logging.info("Saving the model now....")
             call = self._dynamics_function.__call__.get_concrete_function(

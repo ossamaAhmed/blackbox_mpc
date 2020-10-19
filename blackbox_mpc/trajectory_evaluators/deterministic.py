@@ -11,7 +11,7 @@ class DeterministicTrajectoryEvaluator(EvaluatorBase):
         Parameters
         ---------
         reward_function: tf_function
-            Defines the reward function with the prototype: tf_func_name(current_state, next_state, current_actions),
+            Defines the reward function with the prototype: tf_func_name(current_state, current_actions, next_state),
             where current_state is BatchXdim_S, next_state is BatchXdim_S and  current_actions is BatchXdim_U.
         system_dynamics_handler: SystemDynamicsHandler
             Defines the system dynamics handler class with its own trainer and observations and actions
@@ -123,5 +123,5 @@ class DeterministicTrajectoryEvaluator(EvaluatorBase):
               returns the predicted reward using the action, current state and the next one,
               (dims=num_of_agents X 1)
           """
-        return self._reward_function(current_states, next_states,
-                                     current_actions)
+        return self._reward_function(current_states, current_actions,
+                                     next_states)

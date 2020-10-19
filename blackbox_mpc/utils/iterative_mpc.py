@@ -16,6 +16,7 @@ def learn_dynamics_iteratively_w_mpc(env,
                                      number_of_refinement_steps,
                                      task_horizon,
                                      initial_policy=None,
+                                     refinement_policy=None,
                                      planning_horizon=None,
                                      reward_function=None,
                                      is_normalized=True,
@@ -24,6 +25,7 @@ def learn_dynamics_iteratively_w_mpc(env,
                                      num_agents=None,
                                      nn_optimizer=tf.keras.optimizers.Adam,
                                      dynamics_function=None,
+                                     system_dynamics_handler=None,
                                      log_dir=None,
                                      tf_writer=None,
                                      save_model_frequency=1,
@@ -52,6 +54,9 @@ def learn_dynamics_iteratively_w_mpc(env,
             Defines the number of runner running in parallel
     dynamics_function: DeterministicDynamicsFunctionBaseClass
         Defines the system dynamics function.
+    system_dynamics_handler: SystemDynamicsHandler
+            The system_dynamics_handler is a handler of the state, actions and
+            targets processing funcs as well.
     number_of_initial_rollouts: Int
         Number of initial rollouts/ episodes to perform for each of the agents in the vectorized environment.
     number_of_rollouts_for_refinement: Int
@@ -62,6 +67,8 @@ def learn_dynamics_iteratively_w_mpc(env,
         The task horizon/ episode length.
     initial_policy: ModelBasedBasePolicy or ModelFreeBasePolicy
         The policy to be used in collecting the initial episodes from the different agents.
+    refinement_policy: ModelBasedBasePolicy
+        The policy to be used in collecting the followup episodes to refine the policy.
     exploration_noise: bool
         If noise should be added to the actions to help in exploration.
     learning_rate: float
@@ -77,7 +84,7 @@ def learn_dynamics_iteratively_w_mpc(env,
     is_normalized: bool
         Defines if the dynamics function should be trained with normalization or not.
     reward_function: tf_function
-            Defines the reward function with the prototype: tf_func_name(current_state, next_state, current_actions),
+            Defines the reward function with the prototype: tf_func_name(current_state, current_actions, next_state),
             where current_state is BatchXdim_S, next_state is BatchXdim_S and  current_actions is BatchXdim_U.
     planning_horizon: tf.int32
         Defines the planning horizon for the optimizer (how many steps to lookahead and optimize for).
@@ -106,12 +113,13 @@ def learn_dynamics_iteratively_w_mpc(env,
         The policy that was refined to be used as a control policy
     """
     if number_of_initial_rollouts > 0:
-        dynamics_handler = learn_dynamics_from_policy(
+        system_dynamics_handler = learn_dynamics_from_policy(
             env=env,
             policy=initial_policy,
             number_of_rollouts=number_of_initial_rollouts,
             task_horizon=task_horizon,
             dynamics_function=dynamics_function,
+            system_dynamics_handler=system_dynamics_handler,
             epochs=epochs,
             learning_rate=learning_rate,
             validation_split=validation_split,
@@ -125,33 +133,35 @@ def learn_dynamics_iteratively_w_mpc(env,
             saved_model_dir=saved_model_dir)
         logging.info("Trained initial system model")
     else:
-        dynamics_handler = SystemDynamicsHandler(
-            env_action_space=env_action_space,
-            env_observation_space=env_observation_space,
-            true_model=False,
-            dynamics_function=dynamics_function,
-            tf_writer=tf_writer,
-            is_normalized=is_normalized,
-            log_dir=log_dir,
-            save_model_frequency=save_model_frequency,
-            saved_model_dir=saved_model_dir)
-    mpc_policy = MPCPolicy(reward_function=reward_function,
-                           env_action_space=env_action_space,
-                           env_observation_space=env_observation_space,
-                           dynamics_handler=dynamics_handler,
-                           optimizer=optimizer,
-                           optimizer_name=optimizer_name,
-                           num_agents=num_agents,
-                           planning_horizon=planning_horizon,
-                           tf_writer=tf_writer,
-                           **optimizer_args)
+        if system_dynamics_handler is None:
+            system_dynamics_handler = SystemDynamicsHandler(
+                env_action_space=env_action_space,
+                env_observation_space=env_observation_space,
+                true_model=False,
+                dynamics_function=dynamics_function,
+                tf_writer=tf_writer,
+                is_normalized=is_normalized,
+                log_dir=log_dir,
+                save_model_frequency=save_model_frequency,
+                saved_model_dir=saved_model_dir)
+    if refinement_policy is None:
+        refinement_policy = MPCPolicy(reward_function=reward_function,
+                               env_action_space=env_action_space,
+                               env_observation_space=env_observation_space,
+                               dynamics_handler=system_dynamics_handler,
+                               optimizer=optimizer,
+                               optimizer_name=optimizer_name,
+                               num_agents=num_agents,
+                               planning_horizon=planning_horizon,
+                               tf_writer=tf_writer,
+                               **optimizer_args)
     for i in range(number_of_refinement_steps):
-        dynamics_handler = learn_dynamics_from_policy(
+        system_dynamics_handler = learn_dynamics_from_policy(
             env=env,
-            policy=mpc_policy,
+            policy=refinement_policy,
             number_of_rollouts=number_of_rollouts_for_refinement,
             task_horizon=task_horizon,
-            system_dynamics_handler=dynamics_handler,
+            system_dynamics_handler=system_dynamics_handler,
             epochs=epochs,
             learning_rate=learning_rate,
             validation_split=validation_split,
@@ -161,4 +171,4 @@ def learn_dynamics_iteratively_w_mpc(env,
             tf_writer=tf_writer,
             exploration_noise=exploration_noise,
             start_episode=start_episode + (number_of_rollouts_for_refinement*i))
-    return dynamics_handler, mpc_policy
+    return system_dynamics_handler, refinement_policy

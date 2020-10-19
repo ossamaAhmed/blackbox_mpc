@@ -23,18 +23,21 @@ from env_modified import HalfCheetahEnvModified
 from cost_func import reward_function
 from blackbox_mpc.utils.iterative_mpc import learn_dynamics_iteratively_w_mpc
 from blackbox_mpc.environment_utils import EnvironmentWrapper
+from blackbox_mpc.utils.recording import record_rollout
 import tensorflow as tf
 
 log_dir = './'
 tf_writer = tf.summary.create_file_writer(log_dir)
 env = HalfCheetahEnvModified()
 num_of_agents = 10
+parallel_env = EnvironmentWrapper.make_custom_gym_env(
+                                     HalfCheetahEnvModified,
+                                     num_of_agents=num_of_agents)
 
 dynamics_function = DeterministicMLP(layers=[env.action_space.shape[0]+
                                              env.observation_space.shape[0],
-                                             500,
-                                             500,
-                                             500,
+                                             10,
+                                             10,
                                              env.observation_space.shape[0]],
                                      activation_functions=[tf.math.tanh,
                                                            tf.math.tanh,
@@ -43,14 +46,13 @@ dynamics_function = DeterministicMLP(layers=[env.action_space.shape[0]+
 initial_policy = RandomPolicy(number_of_agents=num_of_agents,
                               env_action_space=env.action_space)
 
-learn_dynamics_iteratively_w_mpc(env=EnvironmentWrapper.make_custom_gym_env(
-                                     HalfCheetahEnvModified,
-                                     num_of_agents=num_of_agents),
+system_dynamics_handler, mpc_policy = learn_dynamics_iteratively_w_mpc(
+                                 env=parallel_env,
                                  env_action_space=env.action_space,
                                  env_observation_space=env.observation_space,
                                  number_of_initial_rollouts=5,
                                  number_of_rollouts_for_refinement=3,
-                                 number_of_refinement_steps=40,
+                                 number_of_refinement_steps=1,
                                  task_horizon=1000,
                                  planning_horizon=15,
                                  initial_policy=initial_policy,
@@ -59,4 +61,31 @@ learn_dynamics_iteratively_w_mpc(env=EnvironmentWrapper.make_custom_gym_env(
                                  reward_function=reward_function,
                                  log_dir=log_dir,
                                  tf_writer=tf_writer,
-                                 optimizer_name='RandomSearch')
+                                 optimizer_name='RandomSearch',
+                                 population_size=100,
+                                 save_model_frequency=2,
+                                 batch_size=512,
+                                 epochs=1)
+
+record_rollout(env, horizon=1000, policy=mpc_policy,
+               record_file_path='./current_policy')
+
+system_dynamics_handler, mpc_policy = learn_dynamics_iteratively_w_mpc(
+                                 env=parallel_env,
+                                 env_action_space=env.action_space,
+                                 env_observation_space=env.observation_space,
+                                 number_of_initial_rollouts=0,
+                                 number_of_rollouts_for_refinement=3,
+                                 number_of_refinement_steps=1,
+                                 task_horizon=1000,
+                                 planning_horizon=15,
+                                 system_dynamics_handler=system_dynamics_handler,
+                                 num_agents=num_of_agents,
+                                 reward_function=reward_function,
+                                 log_dir=log_dir,
+                                 tf_writer=tf_writer,
+                                 optimizer_name='RandomSearch',
+                                 population_size=100,
+                                 batch_size=512,
+                                 epochs=1,
+                                 start_episode=3)

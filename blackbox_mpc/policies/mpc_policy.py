@@ -40,7 +40,7 @@ class MPCPolicy(ModelBasedBasePolicy):
             The system_dynamics_handler is a handler of the state, actions and targets processing funcs as well
             as the dynamics function.
         reward_function: tf_function
-            Defines the reward function with the prototype: tf_func_name(current_state, next_state, current_actions),
+            Defines the reward function with the prototype: tf_func_name(current_state, current_actions, next_state),
             where current_state is BatchXdim_S, next_state is BatchXdim_S and  current_actions is BatchXdim_U.
         true_model: bool
             boolean defining if its a true model dynamics or not.

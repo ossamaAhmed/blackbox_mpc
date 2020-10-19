@@ -1,8 +1,8 @@
 import tensorflow as tf
 
 
-@tf.function
-def reward_function(current_state, next_state, actions):
+# #@tf.function
+def reward_function(current_state, actions, next_state):
     heading_penalty_factor = -10
     rewards = tf.zeros((current_state.shape[0],), dtype=tf.float32)
     front_leg = current_state[:, 5]
