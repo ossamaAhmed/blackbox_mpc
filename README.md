@@ -23,10 +23,6 @@ to control an agent in a gym environment.
 | Simultaneous Perturbation Stochastic Approximation   (SPSA)   | :heavy_check_mark:                |
 
 
-<p align=center>
-<img src="docs/_images/mpc.png" width=400>
-</p>
-
 The package features other functionalities to aid in model-based RL research such as:
 
 - Parallel implementation of the different optimizers using Tensorflow 2.0
@@ -34,12 +30,28 @@ The package features other functionalities to aid in model-based RL research suc
 - Monitoring progress using tensorboard.
 - Learning dynamics functions.
 - Recording videos.
-- A modular and flexible interface design to enable research on different trajectory evaluation methods, different optimizers, different 
-system dynamics network architectures or even different training algorithms. 
+- A modular and flexible interface design to enable research on different trajectory evaluation methods, optimizers, cost functions,  
+system dynamics network architectures or even training algorithms. 
  
-
+<p align=center>
+<img src="docs/media/mpc.png" width=400>
+</p>
 
 ## Installation
+
+### Install as a pip package from latest release
+
+```bash
+pip install causal_world
+```
+
+### Install from source
+
+```bash
+git clone https://github.com/ossamaAhmed/blackbox_mpc.git
+cd blackbox_mpc
+pip install -e .
+```
 
 ## Usage
 
