@@ -9,12 +9,12 @@ from blackbox_mpc.dynamics_handlers.system_dynamics_handler import \
 
 
 def learn_dynamics_iteratively_w_mpc(env,
-                                     env_action_space,
-                                     env_observation_space,
                                      number_of_initial_rollouts,
                                      number_of_rollouts_for_refinement,
                                      number_of_refinement_steps,
                                      task_horizon,
+                                     env_action_space=None,
+                                     env_observation_space=None,
                                      initial_policy=None,
                                      refinement_policy=None,
                                      planning_horizon=None,
