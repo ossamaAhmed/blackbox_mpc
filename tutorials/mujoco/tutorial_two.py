@@ -43,7 +43,7 @@ dynamics_function = DeterministicMLP(layers=[env.action_space.shape[0]+
 initial_policy = RandomPolicy(number_of_agents=num_of_agents,
                               env_action_space=env.action_space)
 
-learn_dynamics_iteratively_w_mpc(env=EnvironmentWrapper.make_standard_gym_env(
+learn_dynamics_iteratively_w_mpc(env=EnvironmentWrapper.make_custom_gym_env(
                                      HalfCheetahEnvModified,
                                      num_of_agents=num_of_agents),
                                  env_action_space=env.action_space,
