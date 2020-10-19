@@ -52,6 +52,13 @@ cd blackbox_mpc
 pip install -e .
 ```
 
+### To use GPU (recommended for faster inference)
+
+```bash
+pip install tensorflow_gpu==2.0.0
+```
+
+
 ## Usage
 
 The easiest way to get familiar with the framework is to run through the [tutorials](https://github.com/ossamaAhmed/blackbox_mpc/tree/master/tutorials) provided. An example is shown below:
@@ -95,6 +102,16 @@ An API specification and explanation of the code components can be found [here](
 blackbox_mpc is work done by [Ossama Ahmed (ETH Zürich)](https://ossamaahmed.github.io/), [Jonas Rothfuss (ETH Zürich)](https://las.inf.ethz.ch/people/jonas-rothfuss) and [Prof. Andreas Krause (ETH Zurich)](https://las.inf.ethz.ch/krausea).
 
 This package was developed at the [Learning and Adaptive Systems Lab](https://causal-world.readthedocs.io/en/latest/index.html) @ETH Zurich.
+
+## If you use the package, please cite blackbox_mpc
+
+@misc{trifinger-simulation,
+   author = {Ahmed, Ossama and Rothfuss, Jonas and Krause, Andreas},
+   year = {2020},
+   publisher = {GitHub},
+   journal = {GitHub repository},
+   howpublished = {\url{https://github.com/ossamaAhmed/blackbox_mpc}},
+}
 
 ## License
 
