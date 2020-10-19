@@ -23,7 +23,7 @@ to control an agent in a gym environment.
 | Simultaneous Perturbation Stochastic Approximation   (SPSA)   | :heavy_check_mark:                |
 
 
-The package features other functionalities to aid in model-based RL research such as:
+The package features other functionalities to aid in model-based reinforcement learning (RL) research such as:
 
 - Parallel implementation of the different optimizers using Tensorflow 2.0
 - Loading/ saving system dynamics model.
