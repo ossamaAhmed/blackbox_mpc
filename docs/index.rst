@@ -1,9 +1,9 @@
-Welcome to TF-NeuralMPC's documentation!
-========================================
+About BlackBox_MPC
+==================
 
 
 Despite the impressive results of current RL algorithms, they still face important limitations, namely, low
-sample efficiency and a propensity not to generalize to seemingly minor changes in the task. These challenges
+_sample efficiency and a propensity not to generalize to seemingly minor changes in the task. These challenges
 suggest that large capacity model-free RL models tend to overfit to the abundant data on which they are trained
 on and hence fail to learn an abstract, interpretable, and generalizable understanding of the underlying problem.
 Model-based RL on the other hand learns a forward model of the environment and then uses it in conjunction

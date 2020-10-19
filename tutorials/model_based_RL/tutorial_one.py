@@ -1,6 +1,10 @@
 """
-Tutorial two: create a parallel environment for the pendulum environment and then learn the dynamics model
-from random rollouts, log the data in tensorboard.
+- instantiate an env for a pendulum
+- Define an MLP to learn a dynamics model
+- instantiate a random policy to collect rollouts
+- learn dynamics after collecting rollouts randomly
+- plug in the dynamics model in an MPC
+- render the result
 """
 from blackbox_mpc.dynamics_functions.deterministic_mlp import \
     DeterministicMLP
@@ -13,7 +17,6 @@ from blackbox_mpc.utils.pendulum import pendulum_reward_function
 import gym
 import tensorflow as tf
 
-log_path = './tutorial_2'
 env = gym.make("Pendulum-v0")
 dynamics_function = DeterministicMLP(layers=[env.action_space.shape[0]+env.observation_space.shape[0],
                                               32,

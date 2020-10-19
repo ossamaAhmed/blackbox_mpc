@@ -1,8 +1,7 @@
 """
 - instantiate an env for a pendulum
-- instantiate an MPC controller using the true known analytical model
-- define cost/reward functions as used in the openAI gym env.
-- render the resulting MPC afterwards
+- instantiate an MPC by loading a previosuluy saved dynamics model.
+- render the result.
 """
 from blackbox_mpc.policies.mpc_policy import \
     MPCPolicy

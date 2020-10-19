@@ -86,7 +86,7 @@ class CEMOptimizer(OptimizerBase):
                 tf.square(upper_bound_dist /
                           tf.constant(2, dtype=tf.float32))),
                                               variance)
-            #sample population
+            #_sample population
             samples = tf.random.truncated_normal([self._population_size,
                                                   *self._solution_dim],
                                                   mean,

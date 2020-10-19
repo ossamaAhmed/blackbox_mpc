@@ -69,7 +69,7 @@ class SPSAOptimizer(OptimizerBase):
             ak = self._a_par / (tf.cast(t, tf.float32) + 1 + self._big_a_par) ** self._alpha
             ck = self._noise_parameter / (tf.cast(t, tf.float32) + 1) ** self._gamma
 
-            #sample delta for half of the population
+            #_sample delta for half of the population
             delta = (tf.random.uniform(shape=[self._population_size, *self._solution_dim],
                                        minval=0, maxval=2, dtype=tf.int32)*2) - 1
             delta = tf.cast(delta, dtype=tf.float32)

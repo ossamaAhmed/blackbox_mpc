@@ -10,20 +10,20 @@ def _pendulum_angle_normalize(x):
 @tf.function
 def pendulum_reward_function(current_state, next_state, actions):
     """
-            The pendulum state reward function
+        The pendulum state reward function
 
-           Parameters
-           ---------
-           current_state: tf.float32
-                represents the current state of the system (Bxdim_S)
-           next_state: tf.float32
-                represents the next state of the system (Bxdim_S)
+       Parameters
+       ---------
+       current_state: tf.float32
+            represents the current state of the system (Bxdim_S)
+       next_state: tf.float32
+            represents the next state of the system (Bxdim_S)
 
-           Returns
-            -------
-            rewards: tf.float32
-                The reward corresponding to each of the pairs current_state, next_state
-           """
+       Returns
+        -------
+        rewards: tf.float32
+            The reward corresponding to each of the pairs current_state, next_state
+       """
     return -((_pendulum_angle_normalize(
         tf.math.atan2(current_state[:, 1], current_state[:, 0]))
               ** tf.constant(2, dtype=tf.float32)) + tf.constant(0.1,
@@ -36,10 +36,9 @@ def pendulum_reward_function(current_state, next_state, actions):
 
 
 class PendulumTrueModel(tf.Module):
-    """This is the pendulum true model for the gym environment"""
     def __init__(self, name=None):
         """
-        This is the initializer function for the pendulum true model.
+        This is the pendulum true model for the gym environment
 
 
         Parameters
@@ -67,6 +66,8 @@ class PendulumTrueModel(tf.Module):
         x: tf.float32
             Defines the (s_t, a_t) which is the state and action stacked on top of each other,
             (dims = Batch X (dim_S + dim_U)) [cos(theta), sin(theta), dtheta, u]
+        train: tf.bool
+            Placeholder to confirm with the base class.
 
 
         Returns

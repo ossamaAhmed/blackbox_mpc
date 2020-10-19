@@ -1,6 +1,10 @@
 """
-Tutorial two: create a parallel environment for the pendulum environment and then learn the dynamics model
-from random rollouts, log the data in tensorboard.
+- instantiate an env for a pendulum
+- Define an MLP to learn a dynamics model
+- instantiate a random policy to collect rollouts
+- learn dynamics after collecting rollouts randomly
+- save the model in the log dir with frequency 1.
+- log everything in tensorboard.
 """
 from blackbox_mpc.dynamics_functions.deterministic_mlp import \
     DeterministicMLP

@@ -36,12 +36,20 @@ def learn_dynamics_iteratively_w_mpc(env,
     """
     This is the learn dynamics function iteratively using mpc policy
     for the runner class which samples n rollouts using an initial policy and then
-    uses these rollouts to learn a dynamics function for the system which is then used to sample further rollouts
+    uses these rollouts to learn a dynamics function for the system which is then used to _sample further rollouts
     to refine the dynamics function.
 
 
     Parameters
     ---------
+    env: parallelgymEnv
+        a wrapped gym environment using blackbox.environment_utils.EnvironmentWrapper funcs
+    env_action_space: gym.ActionSpace
+            Defines the action space of the gym environment.
+    env_observation_space: gym.ObservationSpace
+        Defines the observation space of the gym environment.
+    num_agents: tf.int32
+            Defines the number of runner running in parallel
     dynamics_function: DeterministicDynamicsFunctionBaseClass
         Defines the system dynamics function.
     number_of_initial_rollouts: Int
@@ -54,12 +62,6 @@ def learn_dynamics_iteratively_w_mpc(env,
         The task horizon/ episode length.
     initial_policy: ModelBasedBasePolicy or ModelFreeBasePolicy
         The policy to be used in collecting the initial episodes from the different agents.
-    mpc_policy: ModelBasedBasePolicy
-        The policy to be used in collecting the further episodes from the different agents to refine the model
-        estimate.
-    system_dynamics_handler: SystemDynamicsHandler
-        The system_dynamics_handler is a handler of the state, actions and targets processing funcs as well
-        as the dynamics function.
     exploration_noise: bool
         If noise should be added to the actions to help in exploration.
     learning_rate: float
@@ -72,20 +74,29 @@ def learn_dynamics_iteratively_w_mpc(env,
         Defines the batch size to be used for training the model.
     nn_optimizer: tf.keras.optimizers
         Defines the optimizer to use with the neural network.
-    normalization: bool
+    is_normalized: bool
         Defines if the dynamics function should be trained with normalization or not.
-    state_reward_function: tf_function
-        Defines the state reward function with the prototype: tf_func_name(current_state, next_state),
-        where current_state is BatchXdim_S and next_state is BatchXdim_S.
-    actions_reward_function: tf_function
-        Defines the action reward function with the prototype: tf_func_name(current_actions),
-        where current_actions is BatchXdim_U.
+    reward_function: tf_function
+            Defines the reward function with the prototype: tf_func_name(current_state, next_state, current_actions),
+            where current_state is BatchXdim_S, next_state is BatchXdim_S and  current_actions is BatchXdim_U.
     planning_horizon: tf.int32
         Defines the planning horizon for the optimizer (how many steps to lookahead and optimize for).
     optimizer: OptimizerBaseClass
         Optimizer to be used that optimizes for the best action sequence and returns the first action.
     optimizer_name: str
         optimizer name between in ['CEM', 'CMA-ES', 'PI2', 'RandomSearch', 'PSO', 'SPSA'].
+    saved_model_dir: string
+            Defines the saved model directory where the model is saved in, in case of loading the model.
+    save_model_frequency: Int
+        Defines how often the model should be saved (defined relative to the number of refining iters)
+    start_episode: Int
+        the episode index for tensorflow logging purposes
+    exploration_noise: bool
+            Defines if exploration noise should be added to the action to be executed.
+    log_dir: string
+        Defines the log directory to save the normalization statistics in.
+    tf_writer: tf.summary
+            Tensorflow writer to be used in logging the data.
 
     Returns
     -------

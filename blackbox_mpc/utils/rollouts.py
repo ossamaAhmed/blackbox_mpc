@@ -17,6 +17,8 @@ def perform_rollouts(env, number_of_rollouts, task_horizon, policy,
 
     Parameters
     ---------
+    env: parallelgymEnv
+        a wrapped gym environment using blackbox.environment_utils.EnvironmentWrapper funcs
     number_of_rollouts: Int
         Number of rollouts/ episodes to perform for each of the agents in the vectorized environment.
     task_horizon: Int
@@ -25,6 +27,10 @@ def perform_rollouts(env, number_of_rollouts, task_horizon, policy,
         The policy to be used in collecting the episodes from the different agents.
     exploration_noise: bool
         If noise should be added to the actions to help in exploration.
+    tf_writer: tf.summary
+            Tensorflow writer to be used in logging the data.
+    start_episode: Int
+        the episode index for tensorflow logging purposes
 
     Returns
     -------
@@ -40,7 +46,7 @@ def perform_rollouts(env, number_of_rollouts, task_horizon, policy,
     logging.info("Started collecting samples for rollouts")
     for i in range(number_of_rollouts):
         samples.append(
-            sample(
+            _sample(
                 env, task_horizon, policy, exploration_noise=exploration_noise,
                 tf_writer=tf_writer,
                 episode_step=start_episode+i))
@@ -51,8 +57,8 @@ def perform_rollouts(env, number_of_rollouts, task_horizon, policy,
     return traj_obs, traj_acs, traj_rews
 
 
-def sample(env, horizon, policy, episode_step,
-           exploration_noise=False, tf_writer=None):
+def _sample(env, horizon, policy, episode_step,
+            exploration_noise=False, tf_writer=None):
     """
     This is the sampling function for the runner class which samples one episode with a specified length
     using the provided policy.
@@ -60,6 +66,8 @@ def sample(env, horizon, policy, episode_step,
 
     Parameters
     ---------
+    env: parallelgymEnv
+        a wrapped gym environment using blackbox.environment_utils.EnvironmentWrapper funcs
     horizon: Int
         The task horizon/ episode length.
     policy: ModelBasedBasePolicy or ModelFreeBasePolicy

@@ -1,3 +1,21 @@
+"""
+This tutorial is meant to show the modular structure of the package,
+and the possibility of extending the functionality of each block further
+if needed in your research.(such as new optimizer or
+a new trajectory evaluator method..etc)
+
+- instantiate an env for a pendulum.
+- Define an MLP to learn a dynamics model
+- Define the system handler that takes care of training the model
+  and processing the rollouts..etc.
+- Define a trajectory evaluator that evaluates the rewards of trajectories.
+- Define an optimizer.
+- instantiate a random policy to collect rollouts
+- instantiate an mpc policy using the previous blocks.
+- learn dynamics from random policy.
+- use the learned dynamics with mpc and render the result
+- record everything in tensorboard
+"""
 from blackbox_mpc.dynamics_functions.deterministic_mlp import \
     DeterministicMLP
 from blackbox_mpc.policies.random_policy import RandomPolicy

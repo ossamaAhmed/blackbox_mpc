@@ -25,6 +25,10 @@ def learn_dynamics_from_policy(env, policy,
 
     Parameters
     ---------
+    env: parallelgymEnv
+        a wrapped gym environment using blackbox.environment_utils.EnvironmentWrapper funcs
+    policy: ModelFreeBasePolicy or ModelBasedBasePolicy
+        the policy used for learning the dynamics.
     number_of_rollouts: Int
         Number of rollouts/ episodes to perform for each of the agents in the vectorized environment.
     task_horizon: Int
@@ -41,8 +45,22 @@ def learn_dynamics_from_policy(env, policy,
         Defines the batch size to be used for training the model.
     nn_optimizer: tf.keras.optimizers
         Defines the optimizer to use with the neural network.
-    normalization: bool
+    is_normalized: bool
         Defines if the dynamics function should be trained with normalization or not.
+    log_dir: string
+        Defines the log directory to save the normalization statistics in.
+    tf_writer: tf.summary
+            Tensorflow writer to be used in logging the data.
+    system_dynamics_handler: SystemDynamicsHandler
+            The system_dynamics_handler is a handler of the state, actions and targets processing funcs as well
+    saved_model_dir: string
+            Defines the saved model directory where the model is saved in, in case of loading the model.
+    save_model_frequency: Int
+        Defines how often the model should be saved (defined relative to the number of refining iters)
+    start_episode: Int
+        the episode index for tensorflow logging purposes
+    exploration_noise: bool
+            Defines if exploration noise should be added to the action to be executed.
 
     Returns
     -------

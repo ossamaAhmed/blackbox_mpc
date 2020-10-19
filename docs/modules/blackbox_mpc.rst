@@ -1,4 +1,4 @@
-TF-NeuralMPC
+blackbox_mpc
 ============
 
 .. toctree::
@@ -8,3 +8,4 @@ TF-NeuralMPC
     dynamics_handlers/dynamics_handlers
     trajectory_evaluators/trajectory_evaluators
     environment_utils/environment_utils
+    utils/utils

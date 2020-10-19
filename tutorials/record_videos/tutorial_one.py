@@ -1,8 +1,7 @@
 """
 - instantiate an env for a pendulum
 - instantiate an MPC controller using the true known analytical model
-- define cost/reward functions as used in the openAI gym env.
-- render the resulting MPC afterwards
+- record a rollout in a video.
 """
 from blackbox_mpc.policies.mpc_policy import \
     MPCPolicy
@@ -17,7 +16,7 @@ mpc_policy = MPCPolicy(reward_function=pendulum_reward_function,
                        env_observation_space=env.observation_space,
                        true_model=True,
                        dynamics_function=PendulumTrueModel(),
-                       optimizer_name='CEM',
+                       optimizer_name='CMA-ES',
                        num_agents=1)
 record_rollout(env, horizon=200, policy=mpc_policy,
-               record_file_path='./rollout')
+               record_file_path='./cma')
