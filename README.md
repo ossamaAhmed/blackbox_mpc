@@ -52,6 +52,10 @@ Optimizers references:
 
 ## Iterative MPC
 
+<p align=center>
+<img src="docs/media/cheetah_0.gif" width=300> <img src="docs/media/cheetah.gif" width=300>
+</p>
+
 ## Installation
 
 ### Install as a pip package from latest release
